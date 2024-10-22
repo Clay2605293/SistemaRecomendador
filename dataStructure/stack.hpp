@@ -1,7 +1,7 @@
 #ifndef STACK_HPP
 #define STACK_HPP
 
-#include "linked_list.hpp"
+#include "linkedList.hpp"
 
 template <typename T>
 class Stack

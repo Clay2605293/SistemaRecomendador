@@ -1,7 +1,7 @@
 #ifndef QUEUE_HPP
 #define QUEUE_HPP
 
-#include "doubly_linked_list.hpp"
+#include "doublyLinkedList.hpp"
 
 template <typename T>
 class Queue
