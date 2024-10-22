@@ -1,2 +1,8 @@
 # Ignore vscode settings for workspace
 .vscode/
+
+# Ignore executables
+main
+*.bin
+*.out
+*.exe
