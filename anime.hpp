@@ -26,12 +26,12 @@ public:
     // Métodos que podrías agregar para manipular o mostrar información
     void display() const {
         cout << "ID: " << anime_id
-             << ", Name: " << name
-             << ", Genre: " << genre
-             << ", Type: " << type
-             << ", Episodes: " << episodes
-             << ", Rating: " << rating
-             << ", Members: " << members << endl;
+             << " Name: " << name
+             << " Genre: " << genre
+             << " Type: " << type
+             << " Episodes: " << episodes
+             << " Rating: " << rating
+             << " Members: " << members << endl;
     }
 };
 
