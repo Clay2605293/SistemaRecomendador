@@ -6,4 +6,4 @@ main
 *.bin
 *.out
 *.exe
-run.sh
+*.sh

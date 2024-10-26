@@ -13,9 +13,11 @@ using namespace std::chrono;
 void testStoragePerformence(LinkedList<Anime>& linkedList, DoublyLinkedList<Anime>& doublyLinkedList, Queue<Anime>& queue, Stack<Anime>& stack, DynamicArray<Anime>& dynamicArray)
 {
     // Leer el archivo CSV y almacenar los objetos Anime en las estructuras
-    
     string filename = "anime.csv";
-    
+
+    std::cout << "TESTING PERFORMANCE OF DATA STRUCTURES" << endl;
+    std::cout << "############################################" << endl;
+
     // Linked List
     std::cout << "Linked List: " << endl;
     auto start = high_resolution_clock::now();
@@ -57,10 +59,10 @@ void testStoragePerformence(LinkedList<Anime>& linkedList, DoublyLinkedList<Anim
     auto start4 = high_resolution_clock::now();
     readCSV(filename, dynamicArray);
     auto stop4 = high_resolution_clock::now();
-    auto duration4 = duration_cast<seconds>(stop4 - start4);
-    std::cout << "Seconds: " << duration4.count() << endl;
+    auto duration4 = duration_cast<milliseconds>(stop4 - start4);
+    std::cout << "Miliseconds: " << duration4.count() << endl;
     std::cout << "############################################" << endl;
-    
+
     return;
 }
 
@@ -74,13 +76,14 @@ int main() {
 
     // Test the performance of the storage structures
     testStoragePerformence(linkedList, doublyLinkedList, queue, stack, dynamicArray);
-    
 
     // Mostrar el contenido de las estructuras
+    /*
     linkedList.front().display();
     doublyLinkedList.front().display();
     stack.top().display();
     queue.front().display();
-    dynamicArray[5].display();
+    dynamicArray[8].display();
+    */
     return 0;
 }
