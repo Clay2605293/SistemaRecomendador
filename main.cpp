@@ -8,6 +8,49 @@
 #include "dataStructure/PriorityQueue.hpp"
 #include "utilities.hpp"
 #include <iostream>
+#include "searchAlgorithm/binarySearchTitle.hpp"
+
+
+void mostrarPrimerosDiezDynamicArray(const DynamicArray<Anime>& array) {
+    size_t limit = (array.size() < 10) ? array.size() : 10;
+
+    if (limit == 0) {
+        std::cout << "DynamicArray está vacío.\n";
+        return;
+    }
+
+    std::cout << "Primeros 10 animes en DynamicArray:\n";
+    for (size_t i = 0; i < limit; ++i) {
+        const Anime& anime = array[i];
+        std::cout << "ID: " << anime.anime_id << "\n";
+        std::cout << "Título: " << anime.name << "\n";
+        std::cout << "Género: " << anime.genre << "\n";
+        std::cout << "Tipo: " << anime.type << "\n";
+        std::cout << "Episodios: " << anime.episodes << "\n";
+        std::cout << "Calificación: " << anime.rating << "\n";
+        std::cout << "Miembros: " << anime.members << "\n";
+        std::cout << "------------------------\n";
+    }
+}
+
+void mostrarPrimerosDiez(const OrderedList<Anime>& orderedList) {
+    std::cout << "Primeros 10 animes en OrderedList:" << std::endl;
+    int count = 0;
+    
+    for (size_t i = 0; i < orderedList.size() && count < 10; ++i) {
+        Anime anime = orderedList.get(i);  // Obtener el anime en la posición i
+        std::cout << "ID: " << anime.anime_id
+                  << ", Título: " << anime.name
+                  << ", Género: " << anime.genre
+                  << ", Tipo: " << anime.type
+                  << ", Episodios: " << anime.episodes
+                  << ", Calificación: " << anime.rating
+                  << ", Miembros: " << anime.members << std::endl;
+        ++count;
+    }
+    std::cout << std::endl;
+}
+
 
 void mostrarMenuPrincipal() {
     std::cout << "\n--- Sistema Recomendador de Anime ---\n";
@@ -43,6 +86,13 @@ int main() {
     do {
         mostrarMenuPrincipal();
         std::cin >> opcionPrincipal;
+        // Validación de entrada
+        if (std::cin.fail()) {
+            std::cin.clear(); // Restablece el estado de cin
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); // Limpia el buffer
+            std::cout << "Entrada inválida. Por favor, ingrese un número.\n";
+            continue; // Repite el ciclo sin ejecutar el switch
+        }
 
         switch (opcionPrincipal) {
             case 1: {
@@ -51,8 +101,9 @@ int main() {
                 std::cout << "Ingrese el título del anime: ";
                 std::cin.ignore();
                 std::getline(std::cin, titulo);
-                // Llamar a la función para buscar por título
-                // Ejemplo: buscarAnimePorTitulo(linkedList, titulo);
+                
+                // Llamar a la función para buscar por título usando OrderedList
+                buscarAnimePorTitulo(orderedList, titulo);
                 break;
             }
             case 2: {

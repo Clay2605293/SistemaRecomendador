@@ -199,6 +199,18 @@ public:
     std::size_t size() const {
         return list_size;
     }
+
+    //Método para acceder a un nodo
+    const T& get(std::size_t index) const {
+    Node* current = head;
+    for (std::size_t i = 0; i < index && current != nullptr; ++i) {
+        current = current->next;
+    }
+    if (current == nullptr) {
+        throw std::out_of_range("Índice fuera de rango");
+    }
+    return current->data;
+}
 };
 
 #endif

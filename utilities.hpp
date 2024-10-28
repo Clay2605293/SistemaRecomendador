@@ -8,6 +8,7 @@
 #include "dataStructure/stack.hpp"
 #include "dataStructure/OrderedList.hpp"
 #include "dataStructure/PriorityQueue.hpp"
+#include "searchAlgorithm/binarySearchTitle.hpp"
 #include <iostream>
 #include <fstream>
 #include <sstream>
@@ -493,13 +494,11 @@ void readCSV(const std::string& filename, DynamicArray<Anime>& a)
 }
 
 // Storage for OrderedList
-void readCSV(const std::string& filename, OrderedList<Anime>& orderedList)
-{
+void readCSV(const std::string& filename, OrderedList<Anime>& orderedList) {
     std::ifstream file(filename);
     std::string line;
 
-    if (!file.is_open())
-    {
+    if (!file.is_open()) {
         std::cerr << "Error al abrir el archivo: " << filename << std::endl;
         return;
     }
@@ -510,8 +509,7 @@ void readCSV(const std::string& filename, OrderedList<Anime>& orderedList)
     unsigned long long int lineNumber = 0;
     getline(file, line); // Ignore the first line
 
-    while (getline(file, line))
-    {
+    while (getline(file, line)) {
         ++lineNumber;
         std::stringstream ss(line);
         std::string data;
@@ -522,41 +520,31 @@ void readCSV(const std::string& filename, OrderedList<Anime>& orderedList)
 
         // Read name
         getline(ss, data, ',');
-        if (data[0] == '"')
-        {
+        if (data[0] == '"') {
             name = data.substr(1);
-            while (getline(ss, data, ','))
-            {
+            while (getline(ss, data, ',')) {
                 name += "," + data;
-                if (data.back() == '"')
-                {
+                if (data.back() == '"') {
                     name.pop_back();
                     break;
                 }
             }
-        }
-        else
-        {
+        } else {
             name = data;
         }
 
         // Read genre
         getline(ss, data, ',');
-        if (data[0] == '"')
-        {
+        if (data[0] == '"') {
             genre = data.substr(1);
-            while (getline(ss, data, ','))
-            {
+            while (getline(ss, data, ',')) {
                 genre += "," + data;
-                if (data.back() == '"')
-                {
+                if (data.back() == '"') {
                     genre.pop_back();
                     break;
                 }
             }
-        }
-        else
-        {
+        } else {
             genre = data;
         }
 
@@ -575,7 +563,7 @@ void readCSV(const std::string& filename, OrderedList<Anime>& orderedList)
         // Read members
         getline(ss, data, ',');
         members = stoi(data);
-        
+
         // Create anime object
         Anime anime(id, name, genre, type, episodes, rating, members);
 
@@ -585,6 +573,7 @@ void readCSV(const std::string& filename, OrderedList<Anime>& orderedList)
 
     file.close();
 }
+
 
 // Storage for PriorityQueue
 void readCSV(const std::string& filename, PriorityQueue<Anime>& priorityQueue)
@@ -747,6 +736,27 @@ void testStoragePerformance(LinkedList<Anime>& linkedList, DoublyLinkedList<Anim
     stop = high_resolution_clock::now();
     std::cout << "Milliseconds: " << duration_cast<milliseconds>(stop - start).count() << std::endl;
     std::cout << "############################################" << std::endl;
+}
+
+void buscarAnimePorTitulo(const OrderedList<Anime>& orderedList, const std::string& titulo) {
+    int index = binarySearchTitle(orderedList, titulo);
+    
+    if (index != -1) {
+        // Usando `get` para obtener el anime en el índice encontrado
+        Anime foundAnime = orderedList.get(index);
+        std::cout << "\n";
+        std::cout << "Anime encontrado:\n";
+        std::cout << "ID: " << foundAnime.anime_id << "\n";
+        std::cout << "Título: " << foundAnime.name << "\n";
+        std::cout << "Género: " << foundAnime.genre << "\n";
+        std::cout << "Tipo: " << foundAnime.type << "\n";
+        std::cout << "Episodios: " << foundAnime.episodes << "\n";
+        std::cout << "Calificación: " << foundAnime.rating << "\n";
+        std::cout << "Miembros: " << foundAnime.members << "\n";
+    } else {
+        std::cout << "\n";
+        std::cout << "Anime no encontrado.\n";
+    }
 }
 
 
