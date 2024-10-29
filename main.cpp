@@ -11,46 +11,6 @@
 #include "searchAlgorithm/binarySearchTitle.hpp"
 
 
-void mostrarPrimerosDiezDynamicArray(const DynamicArray<Anime>& array) {
-    size_t limit = (array.size() < 10) ? array.size() : 10;
-
-    if (limit == 0) {
-        std::cout << "DynamicArray está vacío.\n";
-        return;
-    }
-
-    std::cout << "Primeros 10 animes en DynamicArray:\n";
-    for (size_t i = 0; i < limit; ++i) {
-        const Anime& anime = array[i];
-        std::cout << "ID: " << anime.anime_id << "\n";
-        std::cout << "Título: " << anime.name << "\n";
-        std::cout << "Género: " << anime.genre << "\n";
-        std::cout << "Tipo: " << anime.type << "\n";
-        std::cout << "Episodios: " << anime.episodes << "\n";
-        std::cout << "Calificación: " << anime.rating << "\n";
-        std::cout << "Miembros: " << anime.members << "\n";
-        std::cout << "------------------------\n";
-    }
-}
-
-void mostrarPrimerosDiez(const OrderedList<Anime>& orderedList) {
-    std::cout << "Primeros 10 animes en OrderedList:" << std::endl;
-    int count = 0;
-    
-    for (size_t i = 0; i < orderedList.size() && count < 10; ++i) {
-        Anime anime = orderedList.get(i);  // Obtener el anime en la posición i
-        std::cout << "ID: " << anime.anime_id
-                  << ", Título: " << anime.name
-                  << ", Género: " << anime.genre
-                  << ", Tipo: " << anime.type
-                  << ", Episodios: " << anime.episodes
-                  << ", Calificación: " << anime.rating
-                  << ", Miembros: " << anime.members << std::endl;
-        ++count;
-    }
-    std::cout << std::endl;
-}
-
 
 void mostrarMenuPrincipal() {
     std::cout << "\n--- Sistema Recomendador de Anime ---\n";
@@ -82,8 +42,20 @@ int main() {
     // Cargar la base de datos en las estructuras
     testStoragePerformance(linkedList, doublyLinkedList, queue, stack, dynamicArray, orderedList, priorityQueue); 
 
+    DynamicArray<std::string> uniqueGenres;
+    extractUniqueGenres("anime.csv", uniqueGenres);
+
+    std::cout << "Categorías únicas en el archivo:\n";
+    for (int i = 0; i < uniqueGenres.size(); ++i) {
+        std::cout << uniqueGenres[i] << std::endl;
+    }
+
+    std::cout << "Total de categorías únicas: " << uniqueGenres.size() << std::endl;
+
+
     int opcionPrincipal;
     do {
+        
         mostrarMenuPrincipal();
         std::cin >> opcionPrincipal;
         // Validación de entrada

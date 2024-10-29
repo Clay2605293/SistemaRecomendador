@@ -759,5 +759,74 @@ void buscarAnimePorTitulo(const OrderedList<Anime>& orderedList, const std::stri
     }
 }
 
+void extractUniqueGenres(const std::string& filename, DynamicArray<std::string>& genresArray) {
+    std::ifstream file(filename);
+    std::string line;
+
+    if (!file.is_open()) {
+        std::cerr << "Error al abrir el archivo: " << filename << std::endl;
+        return;
+    }
+
+
+    std::getline(file, line);
+
+    while (std::getline(file, line)) {
+        std::stringstream ss(line);
+        std::string data, name, genres;
+
+
+        std::getline(ss, data, ',');
+
+        // Leer el campo "name" (manejar nombres con y sin comillas)
+        std::getline(ss, name, ',');
+        if (name[0] == '"') {
+            while (name.back() != '"') {
+                std::string temp;
+                std::getline(ss, temp, ',');
+                name += "," + temp;
+            }
+            name = name.substr(1, name.size() - 2);  // Quitar comillas
+        }
+
+        // Leer el campo "genre" (manejar géneros con y sin comillas)
+        std::getline(ss, genres, ',');
+        if (genres[0] == '"') {
+            while (genres.back() != '"') {
+                std::string temp;
+                std::getline(ss, temp, ',');
+                genres += "," + temp;
+            }
+            genres = genres.substr(1, genres.size() - 2);  // Quitar comillas
+        }
+
+        // Separar los géneros en subcategorías y limpiarlos
+        std::stringstream genreStream(genres);
+        std::string genre;
+        while (std::getline(genreStream, genre, ',')) {
+            // Eliminar espacios al inicio y al final de cada género
+            genre.erase(0, genre.find_first_not_of(" "));
+            genre.erase(genre.find_last_not_of(" ") + 1);
+
+            // Verificar si el género ya está en genresArray
+            bool exists = false;
+            for (int i = 0; i < genresArray.size(); ++i) {
+                if (genresArray[i] == genre) {
+                    exists = true;
+                    break;
+                }
+            }
+
+            // Agregar género si no existe en genresArray
+            if (!exists) {
+                genresArray.push_back(genre);
+            }
+        }
+    }
+
+    file.close();
+}
+
+
 
 #endif
