@@ -1,3 +1,4 @@
+// Dentro de anime.hpp
 #ifndef ANIME_HPP
 #define ANIME_HPP
 
@@ -23,7 +24,12 @@ public:
     Anime(int id, const string& n, const string& g, const string& t, int ep, float r, int m)
         : anime_id(id), name(n), genre(g), type(t), episodes(ep), rating(r), members(m) {}
 
-    // Métodos que podrías agregar para manipular o mostrar información
+    // Sobrecarga del operador < para ordenar alfabéticamente por nombre
+    bool operator<(const Anime& other) const {
+        return name < other.name;
+    }
+
+    // Método para mostrar la información del anime
     void display() const {
         cout << "ID: {" << anime_id
              << "} Name: {" << name
@@ -34,6 +40,5 @@ public:
              << "} Members: {" << members << "}" << endl;
     }
 };
-
 
 #endif // ANIME_HPP
