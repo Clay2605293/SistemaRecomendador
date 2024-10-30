@@ -71,8 +71,12 @@ int main() {
                 std::cin.ignore();
                 std::getline(std::cin, titulo);
                 
-                // Llamar a la función para buscar por título usando OrderedList
-                buscarAnimePorTitulo(orderedList, titulo);
+                int searchType;
+                std::cout << "Seleccione el tipo de búsqueda (1: Secuencial, 2: Binaria, 3: Ternaria): ";
+                std::cin >> searchType;
+
+                // Llamar a la función para buscar por título usando OrderedList y tipo de búsqueda seleccionado
+                buscarAnimePorTitulo(orderedList, titulo, searchType);
                 break;
             }
             case 2: {

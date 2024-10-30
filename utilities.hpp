@@ -8,11 +8,15 @@
 #include "dataStructure/OrderedList.hpp"
 #include "dataStructure/PriorityQueue.hpp"
 #include "searchAlgorithm/binarySearchTitle.hpp"
+#include "searchAlgorithm/ternarySearchTitle.hpp"
+#include "searchAlgorithm/sequentialSearchTitle.hpp"
+#include "searchAlgorithm/toLower.hpp"
 #include <chrono>
 #include <fstream>
 #include <iostream>
 #include <sstream>
 #include <string>
+#include <algorithm>
 #include <type_traits>
 
 using namespace std::chrono;
@@ -255,26 +259,41 @@ genresArray)
     file.close();
 }
 
-void buscarAnimePorTitulo(const OrderedList<Anime> &orderedList,
-                          const std::string &titulo) {
-  int index = binarySearchTitle(orderedList, titulo);
 
-  if (index != -1) {
-    // Usando `get` para obtener el anime en el índice encontrado
-    Anime foundAnime = orderedList.get(index);
-    std::cout << "\n";
-    std::cout << "Anime encontrado:\n";
-    std::cout << "ID: " << foundAnime.anime_id << "\n";
-    std::cout << "Título: " << foundAnime.name << "\n";
-    std::cout << "Género: " << foundAnime.genre << "\n";
-    std::cout << "Tipo: " << foundAnime.type << "\n";
-    std::cout << "Episodios: " << foundAnime.episodes << "\n";
-    std::cout << "Calificación: " << foundAnime.rating << "\n";
-    std::cout << "Miembros: " << foundAnime.members << "\n";
-  } else {
-    std::cout << "\n";
-    std::cout << "Anime no encontrado.\n";
-  }
+void buscarAnimePorTitulo(const OrderedList<Anime> &orderedList,
+                          const std::string &titulo, int searchType) {
+    std::string lowerTitulo = toLower(titulo);
+    int index = -1;
+
+    switch (searchType) {
+        case 1:
+            index = sequentialSearchTitle(orderedList, lowerTitulo);
+            break;
+        case 2:
+            index = binarySearchTitle(orderedList, lowerTitulo);
+            break;
+        case 3:
+            index = ternarySearchTitle(orderedList, lowerTitulo);
+            break;
+        default:
+            std::cout << "Tipo de búsqueda inválido. Seleccione 1, 2 o 3.\n";
+            return;
+    }
+
+    if (index != -1) {
+        Anime foundAnime = orderedList.get(index);
+        std::cout << "\nAnime encontrado:\n";
+        std::cout << "ID: " << foundAnime.anime_id << "\n";
+        std::cout << "Título: " << foundAnime.name << "\n";
+        std::cout << "Género: " << foundAnime.genre << "\n";
+        std::cout << "Tipo: " << foundAnime.type << "\n";
+        std::cout << "Episodios: " << foundAnime.episodes << "\n";
+        std::cout << "Calificación: " << foundAnime.rating << "\n";
+        std::cout << "Miembros: " << foundAnime.members << "\n";
+    } else {
+        std::cout << "\nAnime no encontrado.\n";
+    }
 }
+
 
 #endif
