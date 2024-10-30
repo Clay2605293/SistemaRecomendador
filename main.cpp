@@ -8,9 +8,6 @@
 #include "dataStructure/PriorityQueue.hpp"
 #include "utilities.hpp"
 #include <iostream>
-#include "searchAlgorithm/binarySearchTitle.hpp"
-
-
 
 void mostrarMenuPrincipal() {
     std::cout << "\n--- Sistema Recomendador de Anime ---\n";
@@ -40,7 +37,7 @@ int main() {
     PriorityQueue<Anime> priorityQueue;
 
     // Cargar la base de datos en las estructuras
-    testStoragePerformance(linkedList, doublyLinkedList, queue, stack, dynamicArray, orderedList, priorityQueue); 
+    testStoragePerformance(linkedList, doublyLinkedList, dynamicArray, orderedList, priorityQueue); 
 
     DynamicArray<std::string> uniqueGenres;
     extractUniqueGenres("anime.csv", uniqueGenres);
