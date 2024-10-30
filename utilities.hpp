@@ -18,7 +18,7 @@
 using namespace std::chrono;
 
 template <typename T>
-void extractDataFromCSV(const std::string filename, T &dataStructure) 
+void readCSV(const std::string filename, T &dataStructure) 
 {
     std::ifstream file(filename);
     std::string line;
@@ -116,7 +116,9 @@ void extractDataFromCSV(const std::string filename, T &dataStructure)
             {
                 dataStructure.insert(anime);
                 break;
-            } else if constexpr (std::is_same<T, PriorityQueue<Anime>>::value) {
+            } 
+            else if constexpr (std::is_same<T, PriorityQueue<Anime>>::value) 
+            {
                 dataStructure.push(anime, rating);
                 break;
             }
@@ -140,7 +142,7 @@ void testStoragePerformance(LinkedList<Anime> &linkedList,
   // Linked List
   std::cout << "Linked List: " << std::endl;
   auto start = high_resolution_clock::now();
-  extractDataFromCSV(filename, linkedList);
+  readCSV(filename, linkedList);
   auto stop = high_resolution_clock::now();
   auto duration = duration_cast<milliseconds>(stop - start);
   std::cout << "Milliseconds: " << duration.count() << std::endl;
@@ -149,7 +151,7 @@ void testStoragePerformance(LinkedList<Anime> &linkedList,
   // Doubly Linked List
   std::cout << "Doubly Linked List" << std::endl;
   auto start1 = high_resolution_clock::now();
-  extractDataFromCSV(filename, doublyLinkedList);
+  readCSV(filename, doublyLinkedList);
   auto stop1 = high_resolution_clock::now();
   auto duration1 = duration_cast<milliseconds>(stop1 - start1);
   std::cout << "Milliseconds: " << duration1.count() << std::endl;
@@ -158,7 +160,7 @@ void testStoragePerformance(LinkedList<Anime> &linkedList,
   // Dynamic Array
   std::cout << "Dynamic Array" << std::endl;
   auto start4 = high_resolution_clock::now();
-  extractDataFromCSV(filename, dynamicArray);
+  readCSV(filename, dynamicArray);
   auto stop4 = high_resolution_clock::now();
   auto duration4 = duration_cast<milliseconds>(stop4 - start4);
   std::cout << "Milliseconds: " << duration4.count() << std::endl;
@@ -167,7 +169,7 @@ void testStoragePerformance(LinkedList<Anime> &linkedList,
   // Ordered List
   std::cout << "Ordered List" << std::endl;
   start = high_resolution_clock::now();
-  extractDataFromCSV(filename, orderedList);
+  readCSV(filename, orderedList);
   stop = high_resolution_clock::now();
   std::cout << "Milliseconds: "
             << duration_cast<milliseconds>(stop - start).count() << std::endl;
@@ -176,7 +178,7 @@ void testStoragePerformance(LinkedList<Anime> &linkedList,
   // Priority Queue
   std::cout << "Priority Queue" << std::endl;
   start = high_resolution_clock::now();
-  extractDataFromCSV(filename, priorityQueue);
+  readCSV(filename, priorityQueue);
   stop = high_resolution_clock::now();
   std::cout << "Milliseconds: "
             << duration_cast<milliseconds>(stop - start).count() << std::endl;
