@@ -6,6 +6,7 @@
 #include "dataStructure/dynamicArray.hpp"
 #include "dataStructure/OrderedList.hpp"
 #include "dataStructure/PriorityQueue.hpp"
+#include "sortAlgorithm/quickSort.hpp"
 #include "utilities.hpp"
 #include <iostream>
 
@@ -27,6 +28,8 @@ void mostrarSubmenuMejorCalificado() {
     std::cout << "Seleccione una opción: ";
 }
 
+
+
 int main() {
     LinkedList<Anime> linkedList;
     DoublyLinkedList<Anime> doublyLinkedList;
@@ -37,7 +40,11 @@ int main() {
     PriorityQueue<Anime> priorityQueue;
 
     // Cargar la base de datos en las estructuras
-    testStoragePerformance(linkedList, doublyLinkedList, dynamicArray, orderedList, priorityQueue); 
+    testStoragePerformance(linkedList, doublyLinkedList, dynamicArray, priorityQueue); 
+
+    sortDynamicArrayByName(dynamicArray);
+
+    dynamicArray.verificarOrden();
 
     DynamicArray<std::string> uniqueGenres;
     extractUniqueGenres("anime.csv", uniqueGenres);
@@ -71,8 +78,11 @@ int main() {
                 std::cin.ignore();
                 std::getline(std::cin, titulo);
                 
-                // Llamar a la función para buscar por título usando OrderedList
-                buscarAnimePorTitulo(orderedList, titulo);
+                int searchType;
+                std::cout << "Seleccione el tipo de búsqueda (1: Secuencial, 2: Binaria, 3: Ternaria): ";
+                std::cin >> searchType;
+
+                buscarAnimePorTitulo(dynamicArray, titulo, searchType);
                 break;
             }
             case 2: {
