@@ -16,8 +16,9 @@ void mostrarMenuPrincipal() {
     std::cout << "1. Buscar anime por título\n";
     std::cout << "2. Ver animes mejor calificados\n";
     std::cout << "3. Ver animes por categoría\n";
-    std::cout << "4. Generar recomendaciones personalizadas\n";
-    std::cout << "5. Salir\n";
+    std::cout << "4. Ver animes por tipos\n";
+    std::cout << "5. Generar recomendaciones personalizadas\n";
+    std::cout << "6. Salir\n";
     std::cout << "Seleccione una opción: ";
 }
 
@@ -54,9 +55,19 @@ int main() {
     for (int i = 0; i < uniqueGenres.size(); ++i) {
         std::cout << uniqueGenres[i] << std::endl;
     }
+    
+    DynamicArray<std::string> uniqueTypes;
+    extractUniqueTypes("anime.csv", uniqueTypes);
+
+    for (int i = 0; i < uniqueTypes.size(); ++i) {
+        std::cout << uniqueTypes[i] << std::endl;
+    }
 
     DynamicArray<PriorityQueue<Anime>> genreQueues = initializeGenrePriorityQueues(uniqueGenres);
     assignAnimesToGenreQueues(dynamicArray, uniqueGenres, genreQueues);
+    
+    DynamicArray<PriorityQueue<Anime>> typeQueues = initializeGenrePriorityQueues(uniqueTypes);
+    assignAnimesToTypesQueue(dynamicArray, uniqueTypes, typeQueues);
 
     //Imprimir la cantidad de animes por género para verificar
     for (int i = 0; i < uniqueGenres.size(); ++i) {
@@ -172,21 +183,70 @@ int main() {
                 break;
             }
 
+            case 4: {
+                std::cout << "Seleccione un tipo (teclea el número):\n\n";
+                
+                // Mostrar las categorías en una tabla de 4 columnas
+                for (int i = 0; i < uniqueTypes.size(); ++i) {
+                    std::cout << std::setw(3) << i + 1 << ". " << std::setw(20) << std::left << uniqueTypes[i];  // Ajusta el ancho para alinear columnas
+                    
+                    // Insertar salto de línea cada 4 categorías para formar una nueva fila
+                    if ((i + 1) % 4 == 0) {
+                        std::cout << "\n";
+                    }
+                }
 
-            case 4:
+                // Asegurarse de que no quede una línea incompleta sin salto
+                if (uniqueTypes.size() % 4 != 0) {
+                    std::cout << "\n";
+                }
+
+                int categoriaIndex;
+                std::cout << "\nIngrese el número de la categoria: ";
+                std::cin >> categoriaIndex;
+
+                // Validar la entrada del usuario
+                if (categoriaIndex < 1 || categoriaIndex > uniqueTypes.size()) {
+                    std::cout << "Número inválido. Intente de nuevo.\n";
+                    break;
+                }
+
+                // Obtener la PriorityQueue correspondiente a la categoría elegida
+                PriorityQueue<Anime>& selectedQueue = typeQueues[categoriaIndex - 1];
+                std::string selectedCategory = uniqueTypes[categoriaIndex - 1];
+
+                std::cout << "Mostrando los 5 mejores animes en el tipo: " << selectedCategory << "\n";
+                int count = 0;
+
+                // Mostrar los 5 mejores animes
+                while (!selectedQueue.empty() && count < 5) {
+                    Anime topAnime = selectedQueue.top();  // Obtener el anime con mayor prioridad
+                    selectedQueue.pop();  // Eliminar el anime mostrado para avanzar al siguiente
+
+                    topAnime.display();  // Llamar a la función display para mostrar detalles
+                    std::cout << "------------------------------------\n";
+                    ++count;
+                }
+                
+                if (count == 0) {
+                    std::cout << "No se encontraron animes con tipo seleccionada.\n";
+                }
+                break;
+            }
+            case 5:
                 std::cout << "Generando recomendaciones personalizadas...\n";
                 // Llamar a la función para recomendaciones basadas en el interés del usuario
                 // Ejemplo: generarRecomendaciones(linkedList, preferenciasUsuario);
                 break;
 
-            case 5:
+            case 6:
                 std::cout << "Saliendo...\n";
                 break;
 
             default:
                 std::cout << "Opción inválida. Por favor, intente nuevamente.\n";
         }
-    } while (opcionPrincipal != 5);
+    } while (opcionPrincipal != 6);
 
     return 0;
 }
