@@ -5,12 +5,12 @@
 #include "dataStructure/dynamicArray.hpp"
 #include "dataStructure/linkedList.hpp"
 #include "dataStructure/doublyLinkedList.hpp"
-#include "dataStructure/OrderedList.hpp"
 #include "dataStructure/PriorityQueue.hpp"
 #include "searchAlgorithm/binarySearchTitle.hpp"
 #include "searchAlgorithm/ternarySearchTitle.hpp"
 #include "searchAlgorithm/sequentialSearchTitle.hpp"
 #include "searchAlgorithm/toLower.hpp"
+#include "sortAlgorithm/quickSort.hpp"
 #include <chrono>
 #include <fstream>
 #include <iostream>
@@ -116,11 +116,6 @@ void readCSV(const std::string filename, T &dataStructure)
                 dataStructure.push_front(anime);
                 break;
             }
-            else if constexpr (std::is_same<T, OrderedList<Anime>>::value)
-            {
-                dataStructure.insert(anime);
-                break;
-            } 
             else if constexpr (std::is_same<T, PriorityQueue<Anime>>::value) 
             {
                 dataStructure.push(anime, rating);
@@ -135,7 +130,6 @@ void readCSV(const std::string filename, T &dataStructure)
 void testStoragePerformance(LinkedList<Anime> &linkedList,
                             DoublyLinkedList<Anime> &doublyLinkedList,
                             DynamicArray<Anime> &dynamicArray,
-                            OrderedList<Anime> &orderedList,
                             PriorityQueue<Anime> &priorityQueue) 
 {
   std::string filename = "anime.csv";
@@ -170,14 +164,6 @@ void testStoragePerformance(LinkedList<Anime> &linkedList,
   std::cout << "Milliseconds: " << duration4.count() << std::endl;
   std::cout << "############################################" << std::endl;
 
-  // Ordered List
-  std::cout << "Ordered List" << std::endl;
-  start = high_resolution_clock::now();
-  readCSV(filename, orderedList);
-  stop = high_resolution_clock::now();
-  std::cout << "Milliseconds: "
-            << duration_cast<milliseconds>(stop - start).count() << std::endl;
-  std::cout << "############################################" << std::endl;
 
   // Priority Queue
   std::cout << "Priority Queue" << std::endl;
@@ -260,20 +246,19 @@ genresArray)
 }
 
 
-void buscarAnimePorTitulo(const OrderedList<Anime> &orderedList,
-                          const std::string &titulo, int searchType) {
+void buscarAnimePorTitulo(const DynamicArray<Anime>& dynamicArray, const std::string& titulo, int searchType) {
     std::string lowerTitulo = toLower(titulo);
     int index = -1;
 
     switch (searchType) {
         case 1:
-            index = sequentialSearchTitle(orderedList, lowerTitulo);
+            index = sequentialSearchTitle(dynamicArray, lowerTitulo);
             break;
         case 2:
-            index = binarySearchTitle(orderedList, lowerTitulo);
+            index = binarySearchTitle(dynamicArray, lowerTitulo);
             break;
         case 3:
-            index = ternarySearchTitle(orderedList, lowerTitulo);
+            index = ternarySearchTitle(dynamicArray, lowerTitulo);
             break;
         default:
             std::cout << "Tipo de búsqueda inválido. Seleccione 1, 2 o 3.\n";
@@ -281,7 +266,7 @@ void buscarAnimePorTitulo(const OrderedList<Anime> &orderedList,
     }
 
     if (index != -1) {
-        Anime foundAnime = orderedList.get(index);
+        Anime foundAnime = dynamicArray[index];
         std::cout << "\nAnime encontrado:\n";
         std::cout << "ID: " << foundAnime.anime_id << "\n";
         std::cout << "Título: " << foundAnime.name << "\n";
@@ -294,6 +279,7 @@ void buscarAnimePorTitulo(const OrderedList<Anime> &orderedList,
         std::cout << "\nAnime no encontrado.\n";
     }
 }
+
 
 
 #endif

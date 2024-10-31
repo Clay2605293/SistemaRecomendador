@@ -4,34 +4,23 @@
 #include <iostream>        // Para std::cout
 #include <initializer_list> // Para std::initializer_list
 #include <cstddef>          // Para std::size_t
+#include <string>
+#include "../searchAlgorithm/toLower.hpp"      // Asegúrate de tener la función toLower
 
 template <typename T>
 class OrderedList {
 public:
     struct Node {
         T data;
-        Node* prev;
         Node* next;
-        Node(const T& d) : data(d), prev(nullptr), next(nullptr) {}
+        Node(const T& d) : data(d), next(nullptr) {}
     };
 
     Node* head;
-    Node* tail;
     std::size_t list_size;
 
-    // Función auxiliar para copiar otra lista
-    void copy_from(const OrderedList& other) {
-        clear();
-        Node* current = other.head;
-        while (current) {
-            insert(current->data);
-            current = current->next;
-        }
-    }
-
-public:
     // Constructor por defecto
-    OrderedList() : head(nullptr), tail(nullptr), list_size(0) {}
+    OrderedList() : head(nullptr), list_size(0) {}
 
     // Destructor
     ~OrderedList() {
@@ -39,63 +28,24 @@ public:
     }
 
     // Constructor de copia
-    OrderedList(const OrderedList& other) : head(nullptr), tail(nullptr), list_size(0) {
+    OrderedList(const OrderedList& other) : head(nullptr), list_size(0) {
         copy_from(other);
     }
 
     // Operador de asignación
     OrderedList& operator=(const OrderedList& other) {
         if (this != &other) {
+            clear();
             copy_from(other);
         }
         return *this;
     }
 
     // Constructor con lista de inicialización
-    OrderedList(std::initializer_list<T> values) : head(nullptr), tail(nullptr), list_size(0) {
+    OrderedList(std::initializer_list<T> values) : head(nullptr), list_size(0) {
         for (const T& value : values) {
             insert(value);
         }
-    }
-
-    // Método para obtener un nodo en una posición específica
-    Node* get_node_at(std::size_t index) const {
-        if (index >= list_size) {
-            return nullptr;
-        }
-
-        Node* current = head;
-        for (std::size_t i = 0; i < index; ++i) {
-            current = current->next;
-        }
-        return current;
-    }
-
-    // Binary search
-    Node* binary_search(const T& value) const {
-        if (list_size == 0) {
-            return nullptr;
-        }
-
-        std::size_t left = 0;
-        std::size_t right = list_size - 1;
-
-        while (left <= right) {
-            std::size_t mid = left + (right - left) / 2;
-            Node* mid_node = get_node_at(mid);
-
-            if (mid_node->data == value) {
-                return mid_node;
-            }
-            else if (mid_node->data < value) {
-                left = mid + 1;
-            }
-            else {
-                right = mid - 1;
-            }
-        }
-
-        return nullptr;  // El valor no está en la lista
     }
 
     // Método para limpiar la lista
@@ -107,7 +57,6 @@ public:
             delete to_delete;
         }
         head = nullptr;
-        tail = nullptr;
         list_size = 0;
     }
 
@@ -115,57 +64,32 @@ public:
     void insert(const T& value) {
         Node* new_node = new Node(value);
 
-        if (list_size == 0) {
-            head = tail = new_node;
+        // Comparar por el campo `name` del objeto Anime, en minúsculas
+        if (!head || toLower(head->data.name) >= toLower(value.name)) {
+            new_node->next = head;
+            head = new_node;
         } else {
             Node* current = head;
-            while (current != nullptr && current->data < value) {
+            while (current->next && toLower(current->next->data.name) < toLower(value.name)) {
                 current = current->next;
             }
-
-            if (current == head) {
-                // Insertar al inicio
-                new_node->next = head;
-                head->prev = new_node;
-                head = new_node;
-            } else if (current == nullptr) {
-                // Insertar al final
-                tail->next = new_node;
-                new_node->prev = tail;
-                tail = new_node;
-            } else {
-                // Insertar en medio
-                new_node->next = current;
-                new_node->prev = current->prev;
-                current->prev->next = new_node;
-                current->prev = new_node;
-            }
+            new_node->next = current->next;
+            current->next = new_node;
         }
         list_size++;
     }
 
-    // Elimina un valor
-    void erase(const T& value) {
+
+    // Método para obtener un nodo en una posición específica
+    const T& get(std::size_t index) const {
         Node* current = head;
-        while (current != nullptr && current->data != value) {
+        for (std::size_t i = 0; i < index && current != nullptr; ++i) {
             current = current->next;
         }
         if (current == nullptr) {
-            std::cout << "Value not found in the list." << std::endl;
-            return;
+            throw std::out_of_range("Índice fuera de rango");
         }
-        if (current == head) {
-            head = head->next;
-            if (head != nullptr) head->prev = nullptr;
-        } else if (current == tail) {
-            tail = tail->prev;
-            if (tail != nullptr) tail->next = nullptr;
-        } else {
-            current->prev->next = current->next;
-            current->next->prev = current->prev;
-        }
-        delete current;
-        list_size--;
+        return current->data;
     }
 
     // Encuentra un nodo por su valor
@@ -200,17 +124,34 @@ public:
         return list_size;
     }
 
-    //Método para acceder a un nodo
-    const T& get(std::size_t index) const {
-    Node* current = head;
-    for (std::size_t i = 0; i < index && current != nullptr; ++i) {
-        current = current->next;
+    // Método para verificar si la lista está ordenada
+    void verificarOrden() const {
+        Node* current = head;
+        bool ordenado = true;
+        while (current && current->next) {
+            if (toLower(current->data.name) > toLower(current->next->data.name)) {
+                std::cout << "Desorden detectado entre: " << current->data.name 
+                          << " y " << current->next->data.name << std::endl;
+                ordenado = false;
+            }
+            current = current->next;
+        }
+        if (ordenado) {
+            std::cout << "La lista está ordenada correctamente.\n";
+        } else {
+            std::cout << "La lista tiene elementos fuera de orden.\n";
+        }
     }
-    if (current == nullptr) {
-        throw std::out_of_range("Índice fuera de rango");
+
+private:
+    // Función auxiliar para copiar otra lista
+    void copy_from(const OrderedList& other) {
+        Node* current = other.head;
+        while (current) {
+            insert(current->data);
+            current = current->next;
+        }
     }
-    return current->data;
-}
 };
 
 #endif

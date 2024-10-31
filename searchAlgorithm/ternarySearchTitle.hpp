@@ -1,53 +1,51 @@
 #ifndef TERNARY_SEARCH_TITLE_HPP
 #define TERNARY_SEARCH_TITLE_HPP
 
-#include "../dataStructure/OrderedList.hpp"
+#include "../dataStructure/DynamicArray.hpp"
 #include "../anime.hpp"
-#include "toLower.hpp" // Asegúrate de tener el archivo de conversión a minúsculas
+#include "toLower.hpp" 
 #include <string>
 #include <iostream>
 
-// Función para realizar búsqueda ternaria
-int ternarySearchTitle(const OrderedList<Anime>& list, const std::string& target, int left, int right) {
-    std::string lowerTarget = toLower(target); // Convertir el objetivo a minúsculas
+// Función para realizar búsqueda ternaria con ajustes en las divisiones
+int ternarySearchTitle(const DynamicArray<Anime>& array, const std::string& target, int left, int right) {
+    std::string lowerTarget = toLower(target);
 
     if (right >= left) {
         int mid1 = left + (right - left) / 3;
         int mid2 = right - (right - left) / 3;
 
-        std::string animeTitle1 = toLower(list.get(mid1).name); // Convertir a minúsculas para comparación
-        std::string animeTitle2 = toLower(list.get(mid2).name); // Convertir a minúsculas para comparación
+        std::string animeTitle1 = toLower(array[mid1].name);
+        std::string animeTitle2 = toLower(array[mid2].name);
 
+        std::cout << "Comparando con mid1: " << animeTitle1 << ", mid2: " << animeTitle2 << ", target: " << lowerTarget << std::endl;
 
-        // Verificación directa en los dos puntos medios
+        // Comparación directa en los puntos medios
         if (animeTitle1 == lowerTarget) return mid1;
         if (animeTitle2 == lowerTarget) return mid2;
 
-        // Ajuste: Si el target podría estar entre mid1 y mid2, recorrer ese rango en secuencia para precisión
-        if (lowerTarget > animeTitle1 && lowerTarget < animeTitle2) {
+        // Ajuste de rango para una cobertura completa entre mid1 y mid2
+        if (lowerTarget < animeTitle1) {
+            return ternarySearchTitle(array, target, left, mid1 - 1);
+        } else if (lowerTarget > animeTitle2) {
+            return ternarySearchTitle(array, target, mid2 + 1, right);
+        } else {
+            // Búsqueda lineal en el rango estrecho entre mid1 y mid2
             for (int i = mid1 + 1; i < mid2; ++i) {
-                if (toLower(list.get(i).name) == lowerTarget) {
+                if (toLower(array[i].name) == lowerTarget) {
                     return i;
                 }
             }
-            return -1;
-        }
-
-        // Divisiones en el primer y tercer tercios
-        if (lowerTarget < animeTitle1) {
-            return ternarySearchTitle(list, target, left, mid1 - 1);
-        }
-        if (lowerTarget > animeTitle2) {
-            return ternarySearchTitle(list, target, mid2 + 1, right);
+            return -1;  // Retorna -1 si no se encuentra en el rango medio
         }
     }
 
-    return -1; // Si no se encuentra el título
+    return -1;
 }
 
-// Función de búsqueda pública
-int ternarySearchTitle(const OrderedList<Anime>& list, const std::string& target) {
-    return ternarySearchTitle(list, target, 0, list.size() - 1);
+// Función pública de búsqueda
+int ternarySearchTitle(const DynamicArray<Anime>& array, const std::string& target) {
+    return ternarySearchTitle(array, target, 0, array.size() - 1);
 }
 
 #endif
