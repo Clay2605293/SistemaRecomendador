@@ -6,6 +6,7 @@
 #include "dataStructure/dynamicArray.hpp"
 #include "dataStructure/OrderedList.hpp"
 #include "dataStructure/PriorityQueue.hpp"
+#include "searchAlgorithm/binarySearchTitle.hpp"
 #include "sortAlgorithm/quickSort.hpp"
 #include "utilities.hpp"
 #include <iostream>
@@ -46,7 +47,11 @@ int main() {
 
     sortDynamicArrayByName(dynamicArray);
 
+    DynamicArray<Anime> copiedArray = dynamicArray;
+
     dynamicArray.verificarOrden();
+
+    copiedArray.verificarOrden();
 
     DynamicArray<std::string> uniqueGenres;
     extractUniqueGenres("anime.csv", uniqueGenres);
@@ -229,11 +234,67 @@ int main() {
                 break;
             }
 
-            case 5:
-                std::cout << "Generando recomendaciones personalizadas...\n";
-                // Llamar a la función para recomendaciones basadas en el interés del usuario
-                // Ejemplo: generarRecomendaciones(linkedList, preferenciasUsuario);
+            case 5: {
+                std::cout << "Generar recomendaciones personalizadas\n";
+                std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+                // Pedir al usuario los nombres de 5 animes que le gusten
+                DynamicArray<Anime> animesFavoritos;
+                std::cout << "Ingresa el nombre de 5 animes que te gusten:\n";
+                int index = -1;
+                
+                for (int i = 0; i < 5; ++i) {
+                    std::cin.clear();
+                    std::string animeNombre;
+                    std::cout << "Anime " << i + 1 << ": ";
+                    std::getline(std::cin, animeNombre);
+
+                    index = regresarindexRecom(copiedArray, animeNombre);
+
+                    if (index != -1) {
+                        animesFavoritos.push_back(copiedArray[index]);
+                        index = -1;
+                    } else {
+                        std::cout << "Anime no encontrado en la base de datos.\n";
+                    }
+                }
+
+
+                // Verificar que tenemos animes válidos para recomendar
+                if (animesFavoritos.size() == 0) {
+                    std::cout << "No se encontraron los animes proporcionados. No se pueden generar recomendaciones.\n";
+                    break;
+                }
+
+               // Después de recolectar las categorías
+                DynamicArray<CategoriaFrecuencia> categoriaFrecuencia = recolectarCategorias(animesFavoritos);
+
+                // Imprimir las categorías y sus frecuencias antes de ordenar
+                imprimirCategoriasFrecuencia(categoriaFrecuencia);
+
+                // Ordenar las categorías por frecuencia (de mayor a menor)
+                quickSortCategorias(categoriaFrecuencia);
+
+                // Imprimir las categorías y sus frecuencias después de ordenar
+                std::cout << "\nCategorías ordenadas por frecuencia:\n";
+                imprimirCategoriasFrecuencia(categoriaFrecuencia);
+
+                // Generar las recomendaciones
+                DynamicArray<Anime> mejoresRecomendaciones = generarRecomendaciones(categoriaFrecuencia, genreQueues, uniqueGenres, animesFavoritos);
+
+
+
+                // Mostrar los mejores 5 animes recomendados
+                std::cout << "\n--- Mejores recomendaciones ---\n";
+                for (int i = 0; i < mejoresRecomendaciones.size() && i < 5; ++i) {
+                    mejoresRecomendaciones[i].display();
+                    std::cout << "------------------------------------\n";
+                }
+
+
                 break;
+            }
+
+
 
             case 6:
                 std::cout << "Saliendo...\n";

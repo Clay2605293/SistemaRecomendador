@@ -359,6 +359,31 @@ void buscarAnimePorTitulo(const DynamicArray<Anime>& dynamicArray, const std::st
     }
 }
 
+int regresarindexRecom(const DynamicArray<Anime>& dynamicArray, const std::string& titulo) {
+    std::string lowerTitulo = toLower(titulo);
+    int index = -1;
+
+    index = binarySearchTitle(dynamicArray, lowerTitulo);
+
+
+    if (index != -1) {
+        Anime foundAnime = dynamicArray[index];
+        std::cout << "\nAnime encontrado:\n";
+        std::cout << "ID: " << foundAnime.anime_id << "\n";
+        std::cout << "Título: " << foundAnime.name << "\n";
+        std::cout << "Género: " << foundAnime.genre << "\n";
+        std::cout << "Tipo: " << foundAnime.type << "\n";
+        std::cout << "Episodios: " << foundAnime.episodes << "\n";
+        std::cout << "Calificación: " << foundAnime.rating << "\n";
+        std::cout << "Miembros: " << foundAnime.members << "\n";
+        std::cout << "\n";
+    } else {
+        std::cout << "\nAnime no encontrado.\n";
+    }
+
+    return index;
+}
+
 DynamicArray<PriorityQueue<Anime>> initializeGenrePriorityQueues(const DynamicArray<std::string>& uniqueGenres) {
     DynamicArray<PriorityQueue<Anime>> genreQueues(uniqueGenres.size());
     return genreQueues;
@@ -394,5 +419,209 @@ void assignAnimesToTypesQueue(const DynamicArray<Anime>& animes, const DynamicAr
         }
     }
 }
+
+// Función para eliminar espacios al inicio y al final de una cadena
+std::string trim(const std::string& str) {
+    size_t first = str.find_first_not_of(' ');
+    if (first == std::string::npos) return ""; // La cadena está vacía o solo tiene espacios
+
+    size_t last = str.find_last_not_of(' ');
+    return str.substr(first, (last - first + 1));
+}
+
+
+// Estructura para almacenar una categoría y su frecuencia
+struct CategoriaFrecuencia {
+    std::string categoria;
+    int frecuencia;
+
+    CategoriaFrecuencia() : categoria(""), frecuencia(0) {} // Constructor predeterminado
+    CategoriaFrecuencia(const std::string& cat, int freq) : categoria(cat), frecuencia(freq) {}
+};
+
+
+// Función para recolectar la frecuencia de las categorías de los animes favoritos
+DynamicArray<CategoriaFrecuencia> recolectarCategorias(const DynamicArray<Anime>& animesFavoritos) {
+    DynamicArray<CategoriaFrecuencia> categoriaFrecuencia;
+
+    for (int i = 0; i < animesFavoritos.size(); ++i) {
+        const Anime& anime = animesFavoritos[i];
+        std::istringstream ss(anime.genre);
+        std::string categoria;
+
+        // Procesar cada categoría en la cadena de géneros
+        while (std::getline(ss, categoria, ',')) {
+            categoria = trim(categoria); // Eliminar espacios al inicio y al final
+            bool encontrado = false;
+
+            // Verificar si la categoría ya está en `categoriaFrecuencia`
+            for (int j = 0; j < categoriaFrecuencia.size(); ++j) {
+                if (categoriaFrecuencia[j].categoria == categoria) {
+                    categoriaFrecuencia[j].frecuencia++;
+                    encontrado = true;
+                    break;
+                }
+            }
+
+            // Si no se encuentra, agregar la categoría con frecuencia 1
+            if (!encontrado) {
+                categoriaFrecuencia.push_back(CategoriaFrecuencia(categoria, 1));
+            }
+        }
+    }
+    
+    return categoriaFrecuencia;
+}
+
+
+template <typename T, typename Compare>
+int partition(DynamicArray<T>& array, int low, int high, Compare comp) {
+    T pivot = array[high]; // Elegir el último elemento como pivote
+    int i = low - 1;
+
+    for (int j = low; j < high; j++) {
+        if (comp(array[j], pivot)) { // Usar la función de comparación para ordenar
+            i++;
+            swap(array, i, j);
+        }
+    }
+    swap(array, i + 1, high);
+    return i + 1;
+}
+
+
+// Implementación de quickSort para ordenar por frecuencia
+void quickSortCategorias(DynamicArray<CategoriaFrecuencia>& array, int low, int high) {
+    if (low < high) {
+        int pi = partition(array, low, high, [](const CategoriaFrecuencia& a, const CategoriaFrecuencia& b) {
+            return a.frecuencia > b.frecuencia; // Ordenar de mayor a menor frecuencia
+        });
+        quickSortCategorias(array, low, pi - 1);
+        quickSortCategorias(array, pi + 1, high);
+    }
+}
+
+
+void quickSortCategorias(DynamicArray<CategoriaFrecuencia>& array) {
+    quickSortCategorias(array, 0, array.size() - 1);
+}
+
+
+// Función para encontrar el índice de una categoría en un DynamicArray de cadenas
+int encontrarIndiceCategoria(const std::string& categoria, const DynamicArray<std::string>& categories) {
+    for (int i = 0; i < categories.size(); ++i) {
+        if (categories[i] == categoria) {
+            return i;
+        }
+    }
+    return -1;
+}
+
+
+// Implementación de `generarRecomendaciones`
+DynamicArray<Anime> generarRecomendaciones(const DynamicArray<CategoriaFrecuencia>& categoriaFrecuencia, 
+                                           const DynamicArray<PriorityQueue<Anime>>& genreQueues, 
+                                           const DynamicArray<std::string>& uniqueGenres,
+                                           const DynamicArray<Anime>& animesUsuario) {
+    DynamicArray<Anime> recomendaciones;
+    DynamicArray<std::string> titulosUsuario;
+
+    // Almacenar nombres de animes dados por el usuario en `titulosUsuario`
+    for (int i = 0; i < animesUsuario.size(); ++i) {
+        titulosUsuario.push_back(animesUsuario[i].name);
+    }
+
+    // Debug: Mostrar los títulos que el usuario ya ha visto
+    std::cout << "Animes vistos por el usuario:\n";
+    for (int i = 0; i < titulosUsuario.size(); ++i) {
+        std::cout << "- " << titulosUsuario[i] << "\n";
+    }
+
+    // Definir las cantidades de recomendaciones por categoría
+    int totalRecomendaciones = 5;
+    int maxPorCategoria[] = {3, 2}; // Hasta 3 de la primera categoría, 2 de la segunda
+    int categoriasConsideradas = sizeof(maxPorCategoria) / sizeof(maxPorCategoria[0]);
+
+    int recomendacionesActuales = 0;
+
+    // Procesar categorías por orden de frecuencia (de mayor a menor)
+    for (int i = 0; i < categoriaFrecuencia.size() && recomendacionesActuales < totalRecomendaciones; ++i) {
+        const auto& categoria = categoriaFrecuencia[i].categoria;
+        int maxRecomendacionesEnCategoria = 1; // Valor por defecto si no está en el arreglo
+
+        // Determinar el número máximo de recomendaciones para esta categoría
+        if (i < categoriasConsideradas) {
+            maxRecomendacionesEnCategoria = maxPorCategoria[i];
+        }
+
+        std::cout << "\nProcesando categoría: " << categoria << " (frecuencia: " << categoriaFrecuencia[i].frecuencia << ")\n";
+
+        // Busca el índice de la categoría en `genreQueues`
+        int indiceCategoria = encontrarIndiceCategoria(categoria, uniqueGenres);
+        if (indiceCategoria == -1) {
+            std::cout << "Categoría no encontrada en uniqueGenres.\n";
+            continue;
+        }
+
+        // Copiar la `PriorityQueue` para no modificar la original
+        PriorityQueue<Anime> queue = genreQueues[indiceCategoria];
+        int count = 0;
+
+        // Recorre la cola y evita los títulos que ya están en `titulosUsuario`
+        while (!queue.empty() && count < maxRecomendacionesEnCategoria && recomendacionesActuales < totalRecomendaciones) {
+            Anime topAnime = queue.top();
+            queue.pop();
+
+            // Mostrar información del anime actual
+            std::cout << "Considerando anime: " << topAnime.name << " (rating: " << topAnime.rating << ")\n";
+
+            // Verificar si el anime ya está en la lista del usuario
+            bool encontrado = false;
+            for (int j = 0; j < titulosUsuario.size(); ++j) {
+                if (titulosUsuario[j] == topAnime.name) {
+                    encontrado = true;
+                    std::cout << "-> Ya visto por el usuario. Se omite.\n";
+                    break;
+                }
+            }
+
+            // Solo agrega el anime si no está en la lista del usuario
+            if (!encontrado) {
+                recomendaciones.push_back(topAnime);
+                ++count;
+                ++recomendacionesActuales;
+                std::cout << "-> Agregado a las recomendaciones.\n";
+            }
+        }
+
+        // Verificar si ya alcanzamos el total de recomendaciones
+        if (recomendacionesActuales >= totalRecomendaciones) {
+            std::cout << "Se han alcanzado las recomendaciones necesarias.\n";
+            break;
+        }
+    }
+
+    // Mostrar las recomendaciones finales
+    std::cout << "\nRecomendaciones generadas:\n";
+    for (int i = 0; i < recomendaciones.size(); ++i) {
+        std::cout << "- " << recomendaciones[i].name << " (rating: " << recomendaciones[i].rating << ")\n";
+    }
+
+    return recomendaciones;
+}
+
+
+
+
+
+void imprimirCategoriasFrecuencia(const DynamicArray<CategoriaFrecuencia>& categoriaFrecuencia) {
+    std::cout << "Categorías y sus frecuencias:\n";
+    for (int i = 0; i < categoriaFrecuencia.size(); ++i) {
+        std::cout << "- " << categoriaFrecuencia[i].categoria
+                  << ": " << categoriaFrecuencia[i].frecuencia << "\n";
+    }
+}
+
+
 
 #endif
