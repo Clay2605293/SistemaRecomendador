@@ -175,8 +175,7 @@ void testStoragePerformance(LinkedList<Anime> &linkedList,
   std::cout << "############################################" << std::endl;
 }
 
-void extractUniqueGenres(const std::string& filename, DynamicArray<std::string>&
-genresArray)
+void extractUniqueGenres(const std::string& filename, DynamicArray<std::string>& genresArray)
 {
     std::ifstream file(filename);
     std::string line;
