@@ -31,14 +31,16 @@ public:
 
     // Método para mostrar la información del anime
     void display() const {
-        cout << "ID: {" << anime_id
-             << "} Name: {" << name
-             << "} Genre: {" << genre
-             << "} Type: {" << type
-             << "} Episodes: {" << episodes
-             << "} Rating: {" << rating
-             << "} Members: {" << members << "}" << endl;
+        std::cout << "\nID: " << anime_id
+                << "\nTítulo: " << name
+                << "\nGénero(s): " << genre
+                << "\nTipo: " << type
+                << "\nEpisodios: " << episodes
+                << "\nCalificación: " << rating
+                << "\nMiembros: " << members
+                << "\n------------------------------------\n";
     }
+
 };
 
 #endif // ANIME_HPP
