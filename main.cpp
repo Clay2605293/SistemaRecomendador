@@ -9,6 +9,7 @@
 #include "sortAlgorithm/quickSort.hpp"
 #include "utilities.hpp"
 #include <iostream>
+#include <iomanip>
 
 void mostrarMenuPrincipal() {
     std::cout << "\n--- Sistema Recomendador de Anime ---\n";
@@ -121,45 +122,57 @@ int main() {
                 break;
             }
             case 3: {
-                std::cout << "Ver animes por categoría\n";
-                std::string categoria;
-                std::cout << "Ingrese la categoría: ";
-                std::cin.ignore();
-                std::getline(std::cin, categoria);
-
-                // Buscar el índice de la categoría en uniqueGenres
-                int genreIndex = -1;
+                std::cout << "Seleccione una categoría (teclea el número):\n\n";
+                
+                // Mostrar las categorías en una tabla de 4 columnas
                 for (int i = 0; i < uniqueGenres.size(); ++i) {
-                    if (uniqueGenres[i] == categoria) {
-                        genreIndex = i;
-                        break;
+                    std::cout << std::setw(3) << i + 1 << ". " << std::setw(20) << std::left << uniqueGenres[i];  // Ajusta el ancho para alinear columnas
+                    
+                    // Insertar salto de línea cada 4 categorías para formar una nueva fila
+                    if ((i + 1) % 4 == 0) {
+                        std::cout << "\n";
                     }
                 }
 
-                if (genreIndex == -1) {
-                    std::cout << "Categoría no encontrada. Por favor, ingrese una categoría válida.\n";
-                } else {
-                    std::cout << "Mostrando los 5 mejores animes en la categoría: " << categoria << "\n";
-                    
-                    // Mostrar los mejores 5 animes por rating en la categoría
-                    PriorityQueue<Anime>& queue = genreQueues[genreIndex];
-                    
-                    int count = 0;
-                    while (!queue.empty() && count < 5) {
-                        Anime topAnime = queue.top();  // Obtener el anime con mayor prioridad
-                        queue.pop();  // Eliminar el anime mostrado para avanzar al siguiente
-                        
-                        topAnime.display();  // Llamar a la función display para mostrar detalles
-                        std::cout << "------------------------------------\n";
+                // Asegurarse de que no quede una línea incompleta sin salto
+                if (uniqueGenres.size() % 4 != 0) {
+                    std::cout << "\n";
+                }
 
-                        ++count;
-                    }
-                    if (count == 0) {
-                        std::cout << "No se encontraron animes en la categoría seleccionada.\n";
-                    }
+                int categoriaIndex;
+                std::cout << "\nIngrese el número de la categoría: ";
+                std::cin >> categoriaIndex;
+
+                // Validar la entrada del usuario
+                if (categoriaIndex < 1 || categoriaIndex > uniqueGenres.size()) {
+                    std::cout << "Número inválido. Intente de nuevo.\n";
+                    break;
+                }
+
+                // Obtener la PriorityQueue correspondiente a la categoría elegida
+                PriorityQueue<Anime>& selectedQueue = genreQueues[categoriaIndex - 1];
+                std::string selectedCategory = uniqueGenres[categoriaIndex - 1];
+
+                std::cout << "Mostrando los 5 mejores animes en la categoría: " << selectedCategory << "\n";
+                int count = 0;
+
+                // Mostrar los 5 mejores animes
+                while (!selectedQueue.empty() && count < 5) {
+                    Anime topAnime = selectedQueue.top();  // Obtener el anime con mayor prioridad
+                    selectedQueue.pop();  // Eliminar el anime mostrado para avanzar al siguiente
+
+                    topAnime.display();  // Llamar a la función display para mostrar detalles
+                    std::cout << "------------------------------------\n";
+                    ++count;
+                }
+                
+                if (count == 0) {
+                    std::cout << "No se encontraron animes en la categoría seleccionada.\n";
                 }
                 break;
             }
+
+
             case 4:
                 std::cout << "Generando recomendaciones personalizadas...\n";
                 // Llamar a la función para recomendaciones basadas en el interés del usuario
