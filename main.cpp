@@ -44,6 +44,8 @@ int main() {
 
     sortDynamicArrayByName(dynamicArray);
 
+    dynamicArray.verificarOrden();
+
     DynamicArray<std::string> uniqueGenres;
     extractUniqueGenres("anime.csv", uniqueGenres);
 

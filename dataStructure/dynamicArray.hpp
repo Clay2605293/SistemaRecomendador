@@ -2,6 +2,7 @@
 #define DYNAMIC_ARRAY_HPP
 
 #include <stdexcept>    // For std::out_of_range
+#include "../searchAlgorithm/toLower.hpp"
 
 template <typename T>
 class DynamicArray {
@@ -431,6 +432,22 @@ public:
         
         size_ = newSize;    
     }
+
+    void verificarOrden() const {
+    bool ordenado = true;
+    for (unsigned long long int i = 0; i < size_ - 1; ++i) {
+        if (toLower(data_[i].name) > toLower(data_[i + 1].name)) {
+            std::cout << "Desorden detectado entre: " 
+                      << data_[i].name << " y " << data_[i + 1].name << std::endl;
+            ordenado = false;
+        }
+    }
+    if (ordenado) {
+        std::cout << "El array está ordenado correctamente.\n";
+    } else {
+        std::cout << "El array tiene elementos fuera de orden.\n";
+    }
+}
 
 private:
 

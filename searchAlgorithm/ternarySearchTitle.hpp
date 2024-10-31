@@ -18,8 +18,6 @@ int ternarySearchTitle(const DynamicArray<Anime>& array, const std::string& targ
         std::string animeTitle1 = toLower(array[mid1].name);
         std::string animeTitle2 = toLower(array[mid2].name);
 
-        std::cout << "Comparando con mid1: " << animeTitle1 << ", mid2: " << animeTitle2 << ", target: " << lowerTarget << std::endl;
-
         // Comparación directa en los puntos medios
         if (animeTitle1 == lowerTarget) return mid1;
         if (animeTitle2 == lowerTarget) return mid2;

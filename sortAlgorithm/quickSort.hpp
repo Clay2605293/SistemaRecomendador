@@ -3,6 +3,7 @@
 
 #include "../dataStructure/dynamicArray.hpp"
 #include "../anime.hpp"
+#include "../searchAlgorithm/toLower.hpp"
 
 // Función para intercambiar dos elementos en el DynamicArray
 void swap(DynamicArray<Anime>& array, int i, int j) {
@@ -11,13 +12,13 @@ void swap(DynamicArray<Anime>& array, int i, int j) {
     array[j] = temp;
 }
 
-// Función para la partición en QuickSort
+// Función para la partición en QuickSort, insensible a mayúsculas
 int partition(DynamicArray<Anime>& array, int low, int high) {
-    Anime pivot = array[high];
+    std::string pivotName = toLower(array[high].name); // Convertir el pivote a minúsculas
     int i = low - 1;
     
     for (int j = low; j < high; j++) {
-        if (array[j].name < pivot.name) { // Compara por nombre
+        if (toLower(array[j].name) < pivotName) { // Comparar el nombre en minúsculas
             i++;
             swap(array, i, j);
         }
@@ -43,4 +44,4 @@ void sortDynamicArrayByName(DynamicArray<Anime>& array) {
     }
 }
 
-#endif 
+#endif
