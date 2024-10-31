@@ -137,15 +137,11 @@ int main() {
                 
                 // Mostrar las categorías en una tabla de 4 columnas
                 for (int i = 0; i < uniqueGenres.size(); ++i) {
-                    std::cout << std::setw(3) << i + 1 << ". " << std::setw(20) << std::left << uniqueGenres[i];  // Ajusta el ancho para alinear columnas
-                    
-                    // Insertar salto de línea cada 4 categorías para formar una nueva fila
+                    std::cout << std::setw(3) << i + 1 << ". " << std::setw(20) << std::left << uniqueGenres[i];
                     if ((i + 1) % 4 == 0) {
                         std::cout << "\n";
                     }
                 }
-
-                // Asegurarse de que no quede una línea incompleta sin salto
                 if (uniqueGenres.size() % 4 != 0) {
                     std::cout << "\n";
                 }
@@ -154,23 +150,22 @@ int main() {
                 std::cout << "\nIngrese el número de la categoría: ";
                 std::cin >> categoriaIndex;
 
-                // Validar la entrada del usuario
                 if (categoriaIndex < 1 || categoriaIndex > uniqueGenres.size()) {
                     std::cout << "Número inválido. Intente de nuevo.\n";
                     break;
                 }
 
-                // Obtener la PriorityQueue correspondiente a la categoría elegida
-                PriorityQueue<Anime>& selectedQueue = genreQueues[categoriaIndex - 1];
+                // Copiar PriorityQueue para no modificar la original
+                PriorityQueue<Anime> tempQueue = genreQueues[categoriaIndex - 1];
                 std::string selectedCategory = uniqueGenres[categoriaIndex - 1];
 
                 std::cout << "Mostrando los 5 mejores animes en la categoría: " << selectedCategory << "\n";
                 int count = 0;
 
                 // Mostrar los 5 mejores animes
-                while (!selectedQueue.empty() && count < 5) {
-                    Anime topAnime = selectedQueue.top();  // Obtener el anime con mayor prioridad
-                    selectedQueue.pop();  // Eliminar el anime mostrado para avanzar al siguiente
+                while (!tempQueue.empty() && count < 5) {
+                    Anime topAnime = tempQueue.top();
+                    tempQueue.pop();  // Elimina de la copia temporal
 
                     topAnime.display();  // Llamar a la función display para mostrar detalles
                     std::cout << "------------------------------------\n";
@@ -183,56 +178,57 @@ int main() {
                 break;
             }
 
+
             case 4: {
                 std::cout << "Seleccione un tipo (teclea el número):\n\n";
                 
-                // Mostrar las categorías en una tabla de 4 columnas
+                // Mostrar los tipos en una tabla de 4 columnas
                 for (int i = 0; i < uniqueTypes.size(); ++i) {
-                    std::cout << std::setw(3) << i + 1 << ". " << std::setw(20) << std::left << uniqueTypes[i];  // Ajusta el ancho para alinear columnas
+                    std::cout << std::setw(3) << i + 1 << ". " << std::setw(20) << std::left << uniqueTypes[i];
                     
-                    // Insertar salto de línea cada 4 categorías para formar una nueva fila
+                    // Insertar salto de línea cada 4 tipos para formar una nueva fila
                     if ((i + 1) % 4 == 0) {
                         std::cout << "\n";
                     }
                 }
 
-                // Asegurarse de que no quede una línea incompleta sin salto
                 if (uniqueTypes.size() % 4 != 0) {
                     std::cout << "\n";
                 }
 
-                int categoriaIndex;
-                std::cout << "\nIngrese el número de la categoria: ";
-                std::cin >> categoriaIndex;
+                int tipoIndex;
+                std::cout << "\nIngrese el número del tipo: ";
+                std::cin >> tipoIndex;
 
                 // Validar la entrada del usuario
-                if (categoriaIndex < 1 || categoriaIndex > uniqueTypes.size()) {
+                if (tipoIndex < 1 || tipoIndex > uniqueTypes.size()) {
                     std::cout << "Número inválido. Intente de nuevo.\n";
                     break;
                 }
 
-                // Obtener la PriorityQueue correspondiente a la categoría elegida
-                PriorityQueue<Anime>& selectedQueue = typeQueues[categoriaIndex - 1];
-                std::string selectedCategory = uniqueTypes[categoriaIndex - 1];
+                // Copiar PriorityQueue para no modificar la original
+                PriorityQueue<Anime> tempQueue = typeQueues[tipoIndex - 1];
+                std::string selectedType = uniqueTypes[tipoIndex - 1];
 
-                std::cout << "Mostrando los 5 mejores animes en el tipo: " << selectedCategory << "\n";
+                std::cout << "Mostrando los 5 mejores animes en el tipo: " << selectedType << "\n";
                 int count = 0;
 
-                // Mostrar los 5 mejores animes
-                while (!selectedQueue.empty() && count < 5) {
-                    Anime topAnime = selectedQueue.top();  // Obtener el anime con mayor prioridad
-                    selectedQueue.pop();  // Eliminar el anime mostrado para avanzar al siguiente
+                // Mostrar los 5 mejores animes sin modificar la cola original
+                while (!tempQueue.empty() && count < 5) {
+                    Anime topAnime = tempQueue.top();  // Obtener el anime con mayor prioridad
+                    tempQueue.pop();  // Removerlo de la cola temporal
 
-                    topAnime.display();  // Llamar a la función display para mostrar detalles
+                    topAnime.display();  // Mostrar detalles
                     std::cout << "------------------------------------\n";
                     ++count;
                 }
-                
+
                 if (count == 0) {
-                    std::cout << "No se encontraron animes con tipo seleccionada.\n";
+                    std::cout << "No se encontraron animes con el tipo seleccionado.\n";
                 }
                 break;
             }
+
             case 5:
                 std::cout << "Generando recomendaciones personalizadas...\n";
                 // Llamar a la función para recomendaciones basadas en el interés del usuario
