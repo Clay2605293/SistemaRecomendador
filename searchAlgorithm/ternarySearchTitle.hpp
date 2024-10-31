@@ -1,7 +1,7 @@
 #ifndef TERNARY_SEARCH_TITLE_HPP
 #define TERNARY_SEARCH_TITLE_HPP
 
-#include "../dataStructure/DynamicArray.hpp"
+#include "../dataStructure/dynamicArray.hpp"
 #include "../anime.hpp"
 #include "toLower.hpp" 
 #include <string>
