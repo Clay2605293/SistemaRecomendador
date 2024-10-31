@@ -55,7 +55,8 @@ template <typename T>
 class DoublyLinkedList {
 
 private:
-
+    
+    unsigned long long int  size_ = 0;
     DoublyNode<T>* head_{ nullptr };    /**< Pointer to the first node in the linked list. */
 
     DoublyNode<T>* tail_{ nullptr };    /**< Pointer to the last node in the linked list. */
@@ -74,6 +75,12 @@ public:
     ~DoublyLinkedList()
     {
         clear();
+    }
+    
+    
+    unsigned long long int size()
+    {
+        return size_;
     }
 
     /**
@@ -100,6 +107,7 @@ public:
 
         head_ = nullptr;
         tail_ = nullptr;
+        size_ = 0;
     }
 
     /**
@@ -118,6 +126,7 @@ public:
             tail_ = newNode;
         }
         head_ = newNode;
+        ++size_;
     }
 
     /**
@@ -155,6 +164,8 @@ public:
             }
             delete oldHead;
         }
+        
+        --size_;
     }
 
     /**
@@ -173,6 +184,7 @@ public:
             head_ = newNode;
         }
         tail_ = newNode;
+        ++size_;
     }
 
     /**
@@ -191,6 +203,7 @@ public:
             head_ = newNode;
         }
         tail_ = newNode;
+        ++size_;
     }
 
     /**
@@ -209,6 +222,7 @@ public:
             }
             delete oldTail;
         }
+        --size_;
     }
 
     /**
@@ -283,6 +297,7 @@ public:
             }
             node->next = newNode;
         }
+        ++size_;
     }
 
     /**
@@ -303,6 +318,7 @@ public:
             }
             delete toDelete;
         }
+        --size_;
     }
 
     /**
@@ -324,6 +340,45 @@ public:
         }
 
         return nullptr;
+    }
+
+    T& at(unsigned long long int index)
+    {
+        if (index >= size_)
+        {
+            throw std::out_of_range("Index out of range");
+        }
+        
+        DoublyNode<T>* current = head_;
+        unsigned long long int i = 0;     
+        while (i != index)
+        {
+            DoublyNode<T>* next = current->next;
+            current = next;
+            ++i;
+        }
+        
+        return current->data;
+    }
+
+
+    const T& at(unsigned long long int index) const
+    {
+        if (index >= size_)
+        {
+            throw std::out_of_range("Index out of range");
+        }
+        
+        DoublyNode<T>* current = head_;
+        unsigned long long int i = 0;
+        while (i != index)
+        {
+            DoublyNode<T>* next = current->next;
+            current = next;
+            ++i;
+        }
+        
+        return current->data;
     }
 };
 

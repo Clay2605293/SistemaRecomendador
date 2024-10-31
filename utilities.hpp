@@ -14,6 +14,8 @@
 #include <chrono>
 #include <fstream>
 #include <iostream>
+#include <iterator>
+#include <ostream>
 #include <sstream>
 #include <string>
 #include <algorithm>
@@ -328,22 +330,40 @@ void extractUniqueGenres(const std::string& filename, DynamicArray<std::string>&
 void buscarAnimePorTitulo(const DynamicArray<Anime>& dynamicArray, const std::string& titulo, int searchType) {
     std::string lowerTitulo = toLower(titulo);
     int index = -1;
-
+    
+    std::cout << "\n############################################################################";
     switch (searchType) {
-        case 1:
+        case 1: {
+            auto start = high_resolution_clock::now();
             index = sequentialSearchTitle(dynamicArray, lowerTitulo);
+            auto stop = high_resolution_clock::now();
+            auto duration = duration_cast<microseconds>(stop - start);
+            std::cout << "\nTiempo de busqueda secuencial en microsegundo: " << duration.count() << std::endl;
             break;
-        case 2:
+            }
+        case 2: {
+            auto start2 = high_resolution_clock::now();
             index = binarySearchTitle(dynamicArray, lowerTitulo);
+            auto stop2 = high_resolution_clock::now();
+            auto duration2 = duration_cast<microseconds>(stop2 - start2);
+            std::cout << "\nTiempo de busqueda binaria en microsegundo: " << duration2.count() << std::endl; 
             break;
-        case 3:
+            }
+        case 3: {
+            auto start3 = high_resolution_clock::now();  
             index = ternarySearchTitle(dynamicArray, lowerTitulo);
+            auto stop3 = high_resolution_clock::now();
+            auto duration3 = duration_cast<microseconds>(stop3 - start3);
+            std::cout << "\nTiempo de busqueda ternaria en microsegundo: " << duration3.count() << std::endl;
             break;
-        default:
+            }
+        default: {
             std::cout << "Tipo de búsqueda inválido. Seleccione 1, 2 o 3.\n";
             return;
+            }
     }
-
+    std::cout << "############################################################################" << std::endl;
+    
     if (index != -1) {
         Anime foundAnime = dynamicArray[index];
         std::cout << "\nAnime encontrado:\n";
@@ -387,6 +407,54 @@ int regresarindexRecom(const DynamicArray<Anime>& dynamicArray, const std::strin
 DynamicArray<PriorityQueue<Anime>> initializeGenrePriorityQueues(const DynamicArray<std::string>& uniqueGenres) {
     DynamicArray<PriorityQueue<Anime>> genreQueues(uniqueGenres.size());
     return genreQueues;
+}
+
+LinkedList<PriorityQueue<Anime>> initializeGenrePriorityQueuesLinkedList(const DynamicArray<std::string>& uniqueGenres) {
+    LinkedList<PriorityQueue<Anime>> genreQueue;
+    for (int i = 0; i < uniqueGenres.size(); ++i) {
+        PriorityQueue<Anime> newPriorityQueue;
+        genreQueue.push_front(newPriorityQueue);
+    }
+    return genreQueue;
+}
+
+DoublyLinkedList<PriorityQueue<Anime>> initializeGenrePriorityQueuesDoblyList(const DynamicArray<std::string>& uniqueGenres) {
+    DoublyLinkedList<PriorityQueue<Anime>> genreQueue;
+    for (int i = 0; i < uniqueGenres.size(); ++i) {
+        PriorityQueue<Anime> newPriorityQueue;
+        genreQueue.push_front(newPriorityQueue);
+    }
+    return genreQueue;
+}
+
+void assignAnimesToGenreQueues(const DynamicArray<Anime>& animes, const DynamicArray<std::string>& uniqueGenres, DoublyLinkedList<PriorityQueue<Anime>>& genreQueues) {
+    for (int i = 0; i < animes.size(); ++i) {
+        const Anime& anime = animes[i];
+        
+        for (int j = 0; j < uniqueGenres.size(); ++j) {
+            const std::string& genre = uniqueGenres[j];
+            
+            
+            if (anime.genre.find(genre) != std::string::npos) {
+                genreQueues.at(j).push(anime, anime.rating);
+            }
+        }
+    }
+}
+
+void assignAnimesToGenreQueues(const DynamicArray<Anime>& animes, const DynamicArray<std::string>& uniqueGenres, LinkedList<PriorityQueue<Anime>>& genreQueues) {
+    for (int i = 0; i < animes.size(); ++i) {
+        const Anime& anime = animes[i];
+        
+        for (int j = 0; j < uniqueGenres.size(); ++j) {
+            const std::string& genre = uniqueGenres[j];
+            
+            
+            if (anime.genre.find(genre) != std::string::npos) {
+                genreQueues.at(j).push(anime, anime.rating);
+            }
+        }
+    }
 }
 
 void assignAnimesToGenreQueues(const DynamicArray<Anime>& animes, const DynamicArray<std::string>& uniqueGenres, DynamicArray<PriorityQueue<Anime>>& genreQueues) {
