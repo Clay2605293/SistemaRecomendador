@@ -175,6 +175,86 @@ void testStoragePerformance(LinkedList<Anime> &linkedList,
   std::cout << "############################################" << std::endl;
 }
 
+void extractUniqueTypes(const std::string& filename, DynamicArray<std::string>&
+typesArray)
+{
+    std::ifstream file(filename);
+    std::string line;
+
+    if (!file.is_open()) {
+        std::cerr << "Error al abrir el archivo: " << filename << std::endl;
+        return;
+    }
+
+
+    std::getline(file, line);
+
+    while (std::getline(file, line)) {
+        std::stringstream ss(line);
+        std::string data, name, genres, types;
+
+
+        std::getline(ss, data, ',');
+        // Leer el campo "name" (manejar nombres con y sin comillas)
+        std::getline(ss, name, ',');
+        if (name[0] == '"') {
+            while (name.back() != '"') {
+                std::string temp;
+                std::getline(ss, temp, ',');
+                name += "," + temp;
+            }
+            name = name.substr(1, name.size() - 2);  // Quitar comillas
+        }
+        
+        // Leer el campo "genre" (manejar géneros con y sin comillas)
+        std::getline(ss, genres, ',');
+        if (genres[0] == '"') {
+            while (genres.back() != '"') {
+                std::string temp;
+                std::getline(ss, temp, ',');
+                genres += "," + temp;
+            }
+            genres = genres.substr(1, genres.size() - 2);  // Quitar comillas
+        }
+
+        // Leer el campo "type" (manejar tipos con y sin comillas)
+        std::getline(ss, types, ',');
+        if (types[0] == '"') {
+            while (types.back() != '"') {
+                std::string temp;
+                std::getline(ss, temp, ',');
+                types += "," + temp;
+            }
+            types = types.substr(1, types.size() - 2);  // Quitar comillas
+        }
+
+        // Separar los géneros en subcategorías y limpiarlos
+        std::stringstream typeStream(types);
+        std::string type;
+        while (std::getline(typeStream, type, ',')) {
+            // Eliminar espacios al inicio y al final de cada género
+            type.erase(0, type.find_first_not_of(" "));
+            type.erase(type.find_last_not_of(" ") + 1);
+
+            // Verificar si el género ya está en typesArray
+            bool exists = false;
+            for (int i = 0; i < typesArray.size(); ++i) {
+                if (typesArray[i] == type) {
+                    exists = true;
+                    break;
+                }
+            }
+
+            // Agregar género si no existe en typesArray
+            if (!exists) {
+                typesArray.push_back(type);
+            }
+        }
+    }
+
+    file.close();
+}
+
 void extractUniqueGenres(const std::string& filename, DynamicArray<std::string>& genresArray)
 {
     std::ifstream file(filename);
@@ -291,8 +371,25 @@ void assignAnimesToGenreQueues(const DynamicArray<Anime>& animes, const DynamicA
         for (int j = 0; j < uniqueGenres.size(); ++j) {
             const std::string& genre = uniqueGenres[j];
             
+            
             if (anime.genre.find(genre) != std::string::npos) {
                 genreQueues[j].push(anime, anime.rating);
+            }
+        }
+    }
+}
+
+
+void assignAnimesToTypesQueue(const DynamicArray<Anime>& animes, const DynamicArray<std::string>& uniqueTypes, DynamicArray<PriorityQueue<Anime>>& typeQueues) {
+    for (int i = 0; i < animes.size(); ++i) {
+        const Anime& anime = animes[i];
+        
+        for (int j = 0; j < uniqueTypes.size(); ++j) {
+            const std::string& genre = uniqueTypes[j];
+            
+            
+            if (anime.type.find(genre) != std::string::npos) {
+                typeQueues[j].push(anime, anime.rating);
             }
         }
     }
