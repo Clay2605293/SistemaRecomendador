@@ -280,6 +280,23 @@ void buscarAnimePorTitulo(const DynamicArray<Anime>& dynamicArray, const std::st
     }
 }
 
+DynamicArray<PriorityQueue<Anime>> initializeGenrePriorityQueues(const DynamicArray<std::string>& uniqueGenres) {
+    DynamicArray<PriorityQueue<Anime>> genreQueues(uniqueGenres.size());
+    return genreQueues;
+}
 
+void assignAnimesToGenreQueues(const DynamicArray<Anime>& animes, const DynamicArray<std::string>& uniqueGenres, DynamicArray<PriorityQueue<Anime>>& genreQueues) {
+    for (int i = 0; i < animes.size(); ++i) {
+        const Anime& anime = animes[i];
+        
+        for (int j = 0; j < uniqueGenres.size(); ++j) {
+            const std::string& genre = uniqueGenres[j];
+            
+            if (anime.genre.find(genre) != std::string::npos) {
+                genreQueues[j].push(anime, anime.rating);
+            }
+        }
+    }
+}
 
 #endif

@@ -54,8 +54,13 @@ int main() {
         std::cout << uniqueGenres[i] << std::endl;
     }
 
-    std::cout << "Total de categorías únicas: " << uniqueGenres.size() << std::endl;
+    DynamicArray<PriorityQueue<Anime>> genreQueues = initializeGenrePriorityQueues(uniqueGenres);
+    assignAnimesToGenreQueues(dynamicArray, uniqueGenres, genreQueues);
 
+    //Imprimir la cantidad de animes por género para verificar
+    for (int i = 0; i < uniqueGenres.size(); ++i) {
+        std::cout << "Género: " << uniqueGenres[i] << ", Animes en la cola: " << genreQueues[i].size() << std::endl;
+    }
 
     int opcionPrincipal;
     do {
@@ -121,8 +126,38 @@ int main() {
                 std::cout << "Ingrese la categoría: ";
                 std::cin.ignore();
                 std::getline(std::cin, categoria);
-                // Llamar a la función para mostrar animes por categoría
-                // Ejemplo: mostrarAnimesPorCategoria(linkedList, categoria);
+
+                // Buscar el índice de la categoría en uniqueGenres
+                int genreIndex = -1;
+                for (int i = 0; i < uniqueGenres.size(); ++i) {
+                    if (uniqueGenres[i] == categoria) {
+                        genreIndex = i;
+                        break;
+                    }
+                }
+
+                if (genreIndex == -1) {
+                    std::cout << "Categoría no encontrada. Por favor, ingrese una categoría válida.\n";
+                } else {
+                    std::cout << "Mostrando los 5 mejores animes en la categoría: " << categoria << "\n";
+                    
+                    // Mostrar los mejores 5 animes por rating en la categoría
+                    PriorityQueue<Anime>& queue = genreQueues[genreIndex];
+                    
+                    int count = 0;
+                    while (!queue.empty() && count < 5) {
+                        Anime topAnime = queue.top();  // Obtener el anime con mayor prioridad
+                        queue.pop();  // Eliminar el anime mostrado para avanzar al siguiente
+                        
+                        topAnime.display();  // Llamar a la función display para mostrar detalles
+                        std::cout << "------------------------------------\n";
+
+                        ++count;
+                    }
+                    if (count == 0) {
+                        std::cout << "No se encontraron animes en la categoría seleccionada.\n";
+                    }
+                }
                 break;
             }
             case 4:
