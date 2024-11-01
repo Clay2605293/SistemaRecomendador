@@ -292,6 +292,7 @@ int main() {
 
                 // Generar las recomendaciones
                 DynamicArray<Anime> mejoresRecomendaciones = generarRecomendaciones(categoriaFrecuencia, genreQueues, uniqueGenres, animesFavoritos);
+                DynamicArray<Anime> peoresRecomendaciones = generarPeoresRecomendaciones(categoriaFrecuencia, genreQueues, uniqueGenres, animesFavoritos);
 
 
 
@@ -299,6 +300,13 @@ int main() {
                 std::cout << "\n--- Mejores recomendaciones ---\n";
                 for (int i = 0; i < mejoresRecomendaciones.size() && i < 5; ++i) {
                     mejoresRecomendaciones[i].display();
+                    std::cout << "------------------------------------\n";
+                }
+
+                // Mostrar los mejores 5 animes recomendados
+                std::cout << "\n--- Peores recomendaciones ---\n";
+                for (int i = 0; i < peoresRecomendaciones.size() && i < 5; ++i) {
+                    peoresRecomendaciones[i].display();
                     std::cout << "------------------------------------\n";
                 }
 
