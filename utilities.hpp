@@ -679,6 +679,97 @@ DynamicArray<Anime> generarRecomendaciones(const DynamicArray<CategoriaFrecuenci
 }
 
 
+// Implementación de `generarPeoresRecomendaciones`
+DynamicArray<Anime> generarPeoresRecomendaciones(const DynamicArray<CategoriaFrecuencia>& categoriaFrecuencia, 
+                                                 const DynamicArray<PriorityQueue<Anime>>& genreQueues, 
+                                                 const DynamicArray<std::string>& uniqueGenres,
+                                                 const DynamicArray<Anime>& animesUsuario) {
+    DynamicArray<Anime> peoresRecomendaciones;
+    DynamicArray<std::string> titulosUsuario;
+
+    // Almacenar nombres de animes dados por el usuario en `titulosUsuario`
+    for (int i = 0; i < animesUsuario.size(); ++i) {
+        titulosUsuario.push_back(animesUsuario[i].name);
+    }
+
+    // Identificar las categorías seleccionadas en `categoriaFrecuencia`
+    DynamicArray<std::string> categoriasSeleccionadas;
+    for (int i = 0; i < categoriaFrecuencia.size(); ++i) {
+        categoriasSeleccionadas.push_back(categoriaFrecuencia[i].categoria);
+    }
+
+    // Encontrar las categorías no seleccionadas
+    DynamicArray<std::string> categoriasNoSeleccionadas;
+    for (int i = 0; i < uniqueGenres.size(); ++i) {
+        if (encontrarIndiceCategoria(uniqueGenres[i], categoriasSeleccionadas) == -1) {
+            categoriasNoSeleccionadas.push_back(uniqueGenres[i]);
+        }
+    }
+
+    int totalPeoresRecomendaciones = 5;
+    int peoresRecomendacionesActuales = 0;
+
+    // Extraer animes con menor rating de las categorías no seleccionadas
+    for (int i = 0; i < categoriasNoSeleccionadas.size() && peoresRecomendacionesActuales < totalPeoresRecomendaciones; ++i) {
+        const auto& categoria = categoriasNoSeleccionadas[i];
+        std::cout << "\nProcesando categoría no seleccionada: " << categoria << "\n";
+
+        int indiceCategoria = encontrarIndiceCategoria(categoria, uniqueGenres);
+        if (indiceCategoria == -1) {
+            std::cout << "Categoría no encontrada en uniqueGenres.\n";
+            continue;
+        }
+
+        // Crear una cola temporal para almacenar los animes y obtener los de menor rating
+        PriorityQueue<Anime> tempQueue = genreQueues[indiceCategoria];
+        DynamicArray<Anime> animesConMenorRating;
+
+        // Extraer todos los animes de la cola y almacenarlos temporalmente
+        while (!tempQueue.empty()) {
+            animesConMenorRating.push_back(tempQueue.top());
+            tempQueue.pop();
+        }
+
+        // Ordenar los animes temporalmente por rating ascendente
+        quickSort(animesConMenorRating, std::function<bool(const Anime&, const Anime&)>([](const Anime& a, const Anime& b) {
+            return a.rating < b.rating;
+        }));
+
+
+        int count = 0;
+
+        // Tomar los animes con menor rating y que el usuario no haya visto
+        for (int j = 0; j < animesConMenorRating.size() && count < 2 && peoresRecomendacionesActuales < totalPeoresRecomendaciones; ++j) {
+            const Anime& bottomAnime = animesConMenorRating[j];
+
+            bool encontrado = false;
+            for (int k = 0; k < titulosUsuario.size(); ++k) {
+                if (titulosUsuario[k] == bottomAnime.name) {
+                    encontrado = true;
+                    break;
+                }
+            }
+
+            if (!encontrado) {
+                peoresRecomendaciones.push_back(bottomAnime);
+                ++count;
+                ++peoresRecomendacionesActuales;
+            }
+        }
+
+        if (peoresRecomendacionesActuales >= totalPeoresRecomendaciones) {
+            break;
+        }
+    }
+
+    std::cout << "\nPeores recomendaciones generadas:\n";
+    for (int i = 0; i < peoresRecomendaciones.size(); ++i) {
+        std::cout << "- " << peoresRecomendaciones[i].name << " (rating: " << peoresRecomendaciones[i].rating << ")\n";
+    }
+
+    return peoresRecomendaciones;
+}
+
 
 
 

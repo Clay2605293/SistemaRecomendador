@@ -4,6 +4,7 @@
 #include "../dataStructure/dynamicArray.hpp"
 #include "../anime.hpp"
 #include "../searchAlgorithm/toLower.hpp"
+#include <functional>
 
 // Función para intercambiar dos elementos en DynamicArray<Anime>
 void swap(DynamicArray<Anime>& array, int i, int j) {
@@ -85,6 +86,42 @@ template <typename T>
 void quickSortCategorias(DynamicArray<T>& array) {
     if (array.size() > 1) {
         quickSortCategorias(array, 0, array.size() - 1);
+    }
+}
+
+// --- Nuevo: Función de QuickSort con comparador personalizado ---
+
+// Función de partición con comparador
+template <typename T>
+int partition(DynamicArray<T>& array, int low, int high, std::function<bool(const T&, const T&)> comp) {
+    T pivot = array[high];
+    int i = low - 1;
+
+    for (int j = low; j < high; j++) {
+        if (comp(array[j], pivot)) {  // Usar el comparador para ordenar
+            i++;
+            swap(array, i, j);
+        }
+    }
+    swap(array, i + 1, high);
+    return i + 1;
+}
+
+// QuickSort recursivo con comparador
+template <typename T>
+void quickSort(DynamicArray<T>& array, int low, int high, std::function<bool(const T&, const T&)> comp) {
+    if (low < high) {
+        int pi = partition(array, low, high, comp);
+        quickSort(array, low, pi - 1, comp);
+        quickSort(array, pi + 1, high, comp);
+    }
+}
+
+// Función de QuickSort con comparador para todo el DynamicArray<T>
+template <typename T>
+void quickSort(DynamicArray<T>& array, std::function<bool(const T&, const T&)> comp) {
+    if (array.size() > 1) {
+        quickSort(array, 0, array.size() - 1, comp);
     }
 }
 
