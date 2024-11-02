@@ -2,6 +2,8 @@
 #define UTILITIES_HPP
 
 #include "anime.hpp"
+#include "dataStructure/stack.hpp"
+#include "dataStructure/stack.hpp"
 #include "dataStructure/dynamicArray.hpp"
 #include "dataStructure/linkedList.hpp"
 #include "dataStructure/doublyLinkedList.hpp"
@@ -81,23 +83,33 @@ void readCSV(const std::string filename, T &dataStructure)
             }
             genre = genre.substr(1, genre.size() - 2); // Quitar comillas
         }
+        
+        if (genre == "")
+            continue;
 
         // Save type
         getline(ss, data, ',');
         type = data;
+        if (type == "")
+            continue;
 
         // Save episodes
         getline(ss, data, ',');
         episodes = data != "Unknown" ? stoi(data) : -1;
-
+        if (episodes < 0) {
+            continue;
+        
+        }
         // Save rating
         getline(ss, data, ',');
         rating = data != "" ? stof(data) : -1.0f;
+        if (rating < 0)
+            continue;
 
         // Save members
         getline(ss, data, ',');
         members = stoi(data);
-
+        
         // Create anime object
         Anime anime(id, name, genre, type, episodes, rating, members);
 
@@ -425,6 +437,30 @@ DoublyLinkedList<PriorityQueue<Anime>> initializeGenrePriorityQueuesDoblyList(co
         genreQueue.push_front(newPriorityQueue);
     }
     return genreQueue;
+}
+
+Stack<PriorityQueue<Anime>> initializeGenrePriorityQueuesStack(const DynamicArray<std::string>& uniqueGenres) {
+    Stack<PriorityQueue<Anime>> genreQueue;
+    for (int i = 0; i < uniqueGenres.size(); ++i) {
+        PriorityQueue<Anime> newPriorityQueue;
+        genreQueue.push(newPriorityQueue);
+    }
+    return genreQueue;
+}
+
+void assignAnimesToGenreQueues(const DynamicArray<Anime>& animes, const DynamicArray<std::string>& uniqueGenres, Stack<PriorityQueue<Anime>> genreQueues) {
+    for (int i = 0; i < animes.size(); ++i) {
+        const Anime& anime = animes[i];
+        
+        for (int j = 0; j < uniqueGenres.size(); ++j) {
+            const std::string& genre = uniqueGenres[j];
+            
+            if (anime.genre.find(genre) != std::string::npos) {
+                genreQueues.at(j).push(anime, anime.rating);
+
+            }
+        }
+    }
 }
 
 void assignAnimesToGenreQueues(const DynamicArray<Anime>& animes, const DynamicArray<std::string>& uniqueGenres, DoublyLinkedList<PriorityQueue<Anime>>& genreQueues) {

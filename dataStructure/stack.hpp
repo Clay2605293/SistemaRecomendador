@@ -78,6 +78,14 @@ public:
         container_.clear();
         size_ = 0;
     }
+
+    T& at(unsigned long long int index) {
+        return container_.at(index);
+    }
+    
+    const T& at(unsigned long long int index) const {
+        return container_.at(index);
+    }
 };
 
 

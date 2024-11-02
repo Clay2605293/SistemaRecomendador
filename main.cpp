@@ -78,14 +78,20 @@ int main() {
     LinkedList<PriorityQueue<Anime>> genreQueuesL = initializeGenrePriorityQueuesLinkedList(uniqueGenres);
     assignAnimesToGenreQueues(dynamicArray, uniqueGenres, genreQueuesL);
     
-    DoublyLinkedList<PriorityQueue<Anime>> genreQeuesD = initializeGenrePriorityQueuesDoblyList(uniqueGenres);
-    assignAnimesToGenreQueues(dynamicArray, uniqueGenres, genreQeuesD);
+    DoublyLinkedList<PriorityQueue<Anime>> genreQueuesD = initializeGenrePriorityQueuesDoblyList(uniqueGenres);
+    assignAnimesToGenreQueues(dynamicArray, uniqueGenres, genreQueuesD);
+    
+    //Stack<PriorityQueue<Anime>> genreQueuesS = initializeGenrePriorityQueuesStack(uniqueGenres);
+    //assignAnimesToGenreQueues(dynamicArray, uniqueGenres, genreQueuesS);
 
     // Solo para debugear
     std::cout << "Right here!!!" << std::endl;
     genreQueuesL.front().top().display();
+    genreQueuesD.front().top().display();
     genreQueues.front().top().display();
-    genreQueues.front().top().display();
+    //genreQueuesS.top().top().display();
+
+
     //Imprimir la cantidad de animes por género para verificar
     for (int i = 0; i < uniqueGenres.size(); ++i) {
         std::cout << "Género: " << uniqueGenres[i] << ", Animes en la cola: " << genreQueues[i].size() << std::endl;

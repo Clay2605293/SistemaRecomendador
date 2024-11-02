@@ -2,6 +2,7 @@
 #define QUEUE_HPP
 
 #include "doublyLinkedList.hpp"
+#include "stack.hpp"
 
 template <typename T>
 class Queue
