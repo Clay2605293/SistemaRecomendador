@@ -60,17 +60,18 @@ public:
         list_size = 0;
     }
 
-    // Inserta un valor de forma ordenada
+    // Inserta un valor de forma ordenada por rating
     void insert(const T& value) {
         Node* new_node = new Node(value);
 
-        // Comparar por el campo `name` del objeto Anime, en minúsculas
-        if (!head || toLower(head->data.name) >= toLower(value.name)) {
+        // Insertar al inicio si la lista está vacía o si el nuevo valor tiene un rating mayor o igual
+        if (!head || head->data.rating <= value.rating) {
             new_node->next = head;
             head = new_node;
         } else {
             Node* current = head;
-            while (current->next && toLower(current->next->data.name) < toLower(value.name)) {
+            // Recorrer la lista hasta encontrar la posición correcta para insertar
+            while (current->next && current->next->data.rating > value.rating) {
                 current = current->next;
             }
             new_node->next = current->next;
@@ -78,6 +79,26 @@ public:
         }
         list_size++;
     }
+
+    // Método para verificar si la lista está ordenada por rating
+    void verificarOrden() const {
+        Node* current = head;
+        bool ordenado = true;
+        while (current && current->next) {
+            if (current->data.rating < current->next->data.rating) {
+                std::cout << "Desorden detectado entre: " << current->data.name 
+                        << " y " << current->next->data.name << std::endl;
+                ordenado = false;
+            }
+            current = current->next;
+        }
+        if (ordenado) {
+            std::cout << "La lista está ordenada correctamente por rating.\n";
+        } else {
+            std::cout << "La lista tiene elementos fuera de orden.\n";
+        }
+    }
+
 
 
     // Método para obtener un nodo en una posición específica
@@ -124,24 +145,6 @@ public:
         return list_size;
     }
 
-    // Método para verificar si la lista está ordenada
-    void verificarOrden() const {
-        Node* current = head;
-        bool ordenado = true;
-        while (current && current->next) {
-            if (toLower(current->data.name) > toLower(current->next->data.name)) {
-                std::cout << "Desorden detectado entre: " << current->data.name 
-                          << " y " << current->next->data.name << std::endl;
-                ordenado = false;
-            }
-            current = current->next;
-        }
-        if (ordenado) {
-            std::cout << "La lista está ordenada correctamente.\n";
-        } else {
-            std::cout << "La lista tiene elementos fuera de orden.\n";
-        }
-    }
 
 private:
     // Función auxiliar para copiar otra lista

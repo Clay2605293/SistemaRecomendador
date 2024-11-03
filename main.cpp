@@ -11,13 +11,15 @@
 #include "utilities.hpp"
 #include <iostream>
 #include <iomanip>
+#include <chrono>
+#include <vector>
 
 void mostrarMenuPrincipal() {
     std::cout << "\n--- Sistema Recomendador de Anime ---\n";
     std::cout << "1. Buscar anime por título\n";
-    std::cout << "2. Ver animes mejor calificados\n";
-    std::cout << "3. Ver animes por categoría\n";
-    std::cout << "4. Ver animes por tipos\n";
+    std::cout << "2. Ver animes mejor calificados en general\n";
+    std::cout << "3. Ver animes mejor calificados por categoría\n";
+    std::cout << "4. Ver animes mejor calificados por tipos\n";
     std::cout << "5. Generar recomendaciones personalizadas\n";
     std::cout << "6. Salir\n";
     std::cout << "Seleccione una opción: ";
@@ -25,8 +27,8 @@ void mostrarMenuPrincipal() {
 
 void mostrarSubmenuMejorCalificado() {
     std::cout << "\n--- Ver Animes Mejor Calificados ---\n";
-    std::cout << "1. Ver el mejor calificado de todos\n";
-    std::cout << "2. Ver mejor calificado por categoría\n";
+    std::cout << "1. Usar Priority List\n";
+    std::cout << "2. Usar Ordered List\n";
     std::cout << "3. Regresar al menú principal\n";
     std::cout << "Seleccione una opción: ";
 }
@@ -39,7 +41,6 @@ int main() {
     Queue<Anime> queue;
     Stack<Anime> stack;
     DynamicArray<Anime> dynamicArray;
-    OrderedList<Anime> orderedList;
     PriorityQueue<Anime> priorityQueue;
 
     // Cargar la base de datos en las estructuras
@@ -131,19 +132,44 @@ int main() {
                     mostrarSubmenuMejorCalificado();
                     std::cin >> opcionSubmenu;
                     switch (opcionSubmenu) {
-                        case 1:
-                            std::cout << "Mostrando el anime mejor calificado de todos...\n";
-                            // Llamar a la función para obtener el mejor calificado de todos
-                            // Ejemplo: mostrarMejorCalificadoDeTodos(linkedList);
+                        case 1: {
+                            std::cout << "Mostrando los 5 animes mejor calificados de todos...\n";
+
+                            PriorityQueue<Anime> tempQueueGeneral = priorityQueue;
+
+                            int count = 0;
+                            while (!tempQueueGeneral.empty() && count < 5) {
+                                Anime topAnime = tempQueueGeneral.top();  
+                                tempQueueGeneral.pop(); 
+
+                                topAnime.display(); 
+                                std::cout << "------------------------------------\n";
+                                ++count;
+                            }
+
+                            if (count == 0) {
+                                std::cout << "No se encontraron animes.\n";
+                            }
                             break;
+                        }
                         case 2: {
-                            std::cout << "Ingrese la categoría: ";
-                            std::string categoria;
-                            std::cin.ignore();
-                            std::getline(std::cin, categoria);
-                            std::cout << "Mostrando el mejor calificado en la categoría: " << categoria << "\n";
-                            // Llamar a la función para mostrar el mejor calificado por categoría
-                            // Ejemplo: mostrarMejorCalificadoPorCategoria(linkedList, categoria);
+                            OrderedList<Anime> orderedListGeneral;
+                            
+                            // Llenar la OrderedList desde el DynamicArray ordenado por rating
+                            for (int i = 0; i < dynamicArray.size(); ++i) {
+                                orderedListGeneral.insert(dynamicArray[i]);
+                            }
+
+                            std::cout << "Mostrando los 5 mejores animes:\n";
+                            for (std::size_t i = 0; i < orderedListGeneral.size() && i < 5; ++i) {
+                                try {
+                                    const Anime& topAnime = orderedListGeneral.get(i);
+                                    topAnime.display();
+                                    std::cout << "------------------------------------\n";
+                                } catch (const std::out_of_range&) {
+                                    std::cout << "Error: Índice fuera de rango al intentar acceder a la OrderedList.\n";
+                                }
+                            }
                             break;
                         }
                         case 3:
