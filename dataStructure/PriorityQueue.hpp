@@ -8,15 +8,15 @@
 template <typename T>
 class PriorityQueue {
 private:
-    std::vector<std::pair<T, int>> queue;  // Par de (valor, prioridad)
+    std::vector<std::pair<T, float>> queue;  // Par de (valor, prioridad)
 
 public:
     PriorityQueue() {}
 
-    PriorityQueue(const std::vector<std::pair<T, int>>& elements) {
+    PriorityQueue(const std::vector<std::pair<T, float>>& elements) {
         queue = elements;
-        std::make_heap(queue.begin(), queue.end(), [](const std::pair<T, int>& a, const std::pair<T, int>& b) {
-            return a.second < b.second; // Menor prioridad en la raíz
+        std::make_heap(queue.begin(), queue.end(), [](const std::pair<T, float>& a, const std::pair<T, float>& b) {
+            return a.second < b.second; // Mayor prioridad al frente
         });
     }
 
@@ -40,16 +40,16 @@ public:
         }
     }
 
-    void push(const T& value, int priority) {
+    void push(const T& value, float priority) {
         queue.push_back(std::make_pair(value, priority));
-        std::push_heap(queue.begin(), queue.end(), [](const std::pair<T, int>& a, const std::pair<T, int>& b) {
+        std::push_heap(queue.begin(), queue.end(), [](const std::pair<T, float>& a, const std::pair<T, float>& b) {
             return a.second < b.second; // Mantiene el heap con mayor prioridad al frente
         });
     }
 
     void pop() {
         if (!empty()) {
-            std::pop_heap(queue.begin(), queue.end(), [](const std::pair<T, int>& a, const std::pair<T, int>& b) {
+            std::pop_heap(queue.begin(), queue.end(), [](const std::pair<T, float>& a, const std::pair<T, float>& b) {
                 return a.second < b.second;
             });
             queue.pop_back();  // Remueve el elemento con mayor prioridad
