@@ -819,4 +819,70 @@ void imprimirCategoriasFrecuencia(const DynamicArray<CategoriaFrecuencia>& categ
 
 
 
+// Función para medir y mostrar los tiempos de PriorityQueue en DynamicArray
+void measureDynamicPriorityQueue(DynamicArray<PriorityQueue<Anime>>& genreQueues) {
+    for (int i = 0; i < genreQueues.size(); ++i) {
+        auto start = std::chrono::high_resolution_clock::now();
+        
+        PriorityQueue<Anime> tempQueue = genreQueues[i];
+        int count = 0;
+        
+        std::cout << "\nGénero: " << i + 1 << "\n";
+        while (!tempQueue.empty() && count < 5) {
+            Anime topAnime = tempQueue.top();
+            tempQueue.pop();
+            topAnime.display();
+            ++count;
+        }
+
+        auto end = std::chrono::high_resolution_clock::now();
+        std::cout << "Time for DynamicArray PriorityQueue: " 
+                  << std::chrono::duration_cast<std::chrono::nanoseconds>(end - start).count() 
+                  << " ns\n";
+    }
+}
+
+// Función para medir y mostrar los tiempos de PriorityQueue en LinkedList
+void measureLinkedListPriorityQueue(LinkedList<PriorityQueue<Anime>>& genreQueuesL) {
+    auto start = std::chrono::high_resolution_clock::now();
+
+    PriorityQueue<Anime> tempQueue = genreQueuesL.front();
+    int count = 0;
+
+    std::cout << "\nLinkedList PriorityQueue:\n";
+    while (!tempQueue.empty() && count < 5) {
+        Anime topAnime = tempQueue.top();
+        tempQueue.pop();
+        topAnime.display();
+        ++count;
+    }
+
+    auto end = std::chrono::high_resolution_clock::now();
+    std::cout << "Time for LinkedList PriorityQueue: " 
+              << std::chrono::duration_cast<std::chrono::nanoseconds>(end - start).count() 
+              << " ns\n";
+}
+
+// Función para medir y mostrar los tiempos de PriorityQueue en DoublyLinkedList
+void measureDoublyLinkedListPriorityQueue(DoublyLinkedList<PriorityQueue<Anime>>& genreQueuesD) {
+    auto start = std::chrono::high_resolution_clock::now();
+
+    PriorityQueue<Anime> tempQueue = genreQueuesD.front();
+    int count = 0;
+
+    std::cout << "\nDoublyLinkedList PriorityQueue:\n";
+    while (!tempQueue.empty() && count < 5) {
+        Anime topAnime = tempQueue.top();
+        tempQueue.pop();
+        topAnime.display();
+        ++count;
+    }
+
+    auto end = std::chrono::high_resolution_clock::now();
+    std::cout << "Time for DoublyLinkedList PriorityQueue: " 
+              << std::chrono::duration_cast<std::chrono::nanoseconds>(end - start).count() 
+              << " ns\n";
+}
+
+
 #endif

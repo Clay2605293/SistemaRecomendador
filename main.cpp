@@ -86,10 +86,11 @@ int main() {
     //assignAnimesToGenreQueues(dynamicArray, uniqueGenres, genreQueuesS);
 
     // Solo para debugear
-    std::cout << "Right here!!!" << std::endl;
-    genreQueuesL.front().top().display();
-    genreQueuesD.front().top().display();
-    genreQueues.front().top().display();
+    std::cout << std::endl;
+    std::cout << "Pruebas de estructuras" << std::endl;
+    measureDynamicPriorityQueue(genreQueues);
+    measureLinkedListPriorityQueue(genreQueuesL);
+    measureDoublyLinkedListPriorityQueue(genreQueuesD);
     //genreQueuesS.top().top().display();
 
 
@@ -133,8 +134,8 @@ int main() {
                     std::cin >> opcionSubmenu;
                     switch (opcionSubmenu) {
                         case 1: {
+                            auto start = std::chrono::high_resolution_clock::now();
                             std::cout << "Mostrando los 5 animes mejor calificados de todos...\n";
-
                             PriorityQueue<Anime> tempQueueGeneral = priorityQueue;
 
                             int count = 0;
@@ -150,9 +151,14 @@ int main() {
                             if (count == 0) {
                                 std::cout << "No se encontraron animes.\n";
                             }
+                            auto end = std::chrono::high_resolution_clock::now();
+                            std::cout << "Time for PriorityQueue: " 
+                                    << std::chrono::duration_cast<std::chrono::nanoseconds>(end - start).count() 
+                                    << " ns\n";
                             break;
                         }
                         case 2: {
+                            auto start = std::chrono::high_resolution_clock::now();
                             OrderedList<Anime> orderedListGeneral;
                             
                             // Llenar la OrderedList desde el DynamicArray ordenado por rating
@@ -170,6 +176,10 @@ int main() {
                                     std::cout << "Error: Índice fuera de rango al intentar acceder a la OrderedList.\n";
                                 }
                             }
+                                                        auto end = std::chrono::high_resolution_clock::now();
+                            std::cout << "Time for OrderedList: " 
+                                    << std::chrono::duration_cast<std::chrono::nanoseconds>(end - start).count() 
+                                    << " ns\n";
                             break;
                         }
                         case 3:
